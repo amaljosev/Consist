@@ -20,8 +20,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateScreen extends StatefulWidget {
-  const CreateScreen({super.key, required this.type});
+  const CreateScreen({super.key, required this.type, required this.habit});
   final HabitType type;
+  final Habit? habit;
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -33,8 +34,13 @@ class _CreateScreenState extends State<CreateScreen> {
   final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
-    // Initialize with the widget type
-    context.read<CreateBloc>().add(InitializeCreateEvent(widget.type));
+    context.read<CreateBloc>().add(
+      InitializeCreateEvent(widget.type, widget.habit),
+    );
+    if (widget.habit != null) {
+      nameController.text = widget.habit!.habitName ?? '';
+      noteController.text = widget.habit!.note ?? '';
+    }
     super.initState();
   }
 
@@ -87,10 +93,10 @@ class _CreateScreenState extends State<CreateScreen> {
               actions: [
                 TextButton(
                   onPressed: () => _formKey.currentState!.validate()
-                      ? _createHabit(context, habit)
+                      ? _createHabit(context, habit, widget.habit != null)
                       : null,
                   child: Text(
-                    'Create',
+                    widget.habit != null ? 'Update' : 'Create',
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -225,9 +231,9 @@ class _CreateScreenState extends State<CreateScreen> {
     );
   }
 
-  void _createHabit(BuildContext context, Habit habit) {
+  void _createHabit(BuildContext context, Habit habit, bool isUpdate) {
     final newHabit = Habit(
-      id: DateTime.now().toString(),
+      id: isUpdate ? habit.id : DateTime.now().toString(),
       habitName: nameController.text,
       habitColorId: habit.habitColorId,
       habitEndAt: habit.habitEndAt ?? 'Off',
@@ -240,7 +246,11 @@ class _CreateScreenState extends State<CreateScreen> {
       note: noteController.text,
       repeatDays: habit.repeatDays,
     );
-    context.read<HabitsBloc>().add(AddHabitEvent(newHabit));
+    if (isUpdate) {
+      context.read<HabitsBloc>().add(UpdateHabitEvent(newHabit));
+    } else {
+      context.read<HabitsBloc>().add(AddHabitEvent(newHabit));
+    }
     Navigator.pop(context);
     Navigator.pop(context);
   }

@@ -1,6 +1,8 @@
+import 'package:consist/core/constants/habits_items.dart';
 import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
 import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_bloc.dart';
 import 'package:consist/features/habit/presentation/dialogs/delete_habit_dialog.dart';
+import 'package:consist/features/habit/presentation/pages/create_habit/create_habit_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -35,7 +37,7 @@ Future<dynamic> habitDetailSheet({
               child: AppBar(
                 backgroundColor: Colors.transparent,
                 foregroundColor: Colors.black,
-
+                
                 actions: [
                   IconButton(
                     onPressed: () async {
@@ -50,7 +52,15 @@ Future<dynamic> habitDetailSheet({
                     icon: Icon(CupertinoIcons.delete),
                   ),
                   IconButton(onPressed: () {}, icon: Icon(Icons.bar_chart)),
-                  IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            CreateScreen(habit: habit, type: HabitType.quit),
+                      ),
+                    ),
+                    icon: Icon(Icons.edit),
+                  ),
                 ],
               ),
             ),
@@ -84,6 +94,8 @@ Future<dynamic> habitDetailSheet({
                       Text(
                         habit.habitName ?? 'Habit Name',
                         style: Theme.of(context).textTheme.headlineMedium,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
@@ -148,7 +160,7 @@ Future<dynamic> habitDetailSheet({
                       children: [
                         Icon(Icons.snooze),
                         Text(
-                          'Snooze',
+                          'Snooze habit',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -165,7 +177,7 @@ Future<dynamic> habitDetailSheet({
                       children: [
                         Icon(Icons.check),
                         Text(
-                          'Complete',
+                          'Complete now',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
@@ -182,7 +194,7 @@ Future<dynamic> habitDetailSheet({
                       children: [
                         Icon(Icons.skip_next_outlined),
                         Text(
-                          'Skip',
+                          'Skip today',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],

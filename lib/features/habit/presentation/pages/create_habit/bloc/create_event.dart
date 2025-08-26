@@ -10,8 +10,9 @@ abstract class CreateEvent extends Equatable {
 
 class InitializeCreateEvent extends CreateEvent {
   final HabitType type;
+  final Habit? habit;
 
-  const InitializeCreateEvent(this.type);
+  const InitializeCreateEvent(this.type, this.habit);
 
   @override
   List<Object?> get props => [type];

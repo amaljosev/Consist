@@ -1,3 +1,4 @@
+
 import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
 import 'package:consist/features/habit/domain/create_habit/repositories/habit_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -35,7 +36,8 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
     // Update habit
     on<UpdateHabitEvent>((event, emit) async {
       try {
-        await habitRepository.updateHabit(event.habit);
+        emit(HabitsLoading());
+       await habitRepository.updateHabit(event.habit);
         final habits = await habitRepository.getAllHabits();
         emit(HabitsLoaded(habits: habits));
       } catch (e) {

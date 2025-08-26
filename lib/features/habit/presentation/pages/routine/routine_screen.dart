@@ -32,24 +32,7 @@ class _RoutineScreenState extends State<RoutineScreen> {
           : const Color.fromARGB(255, 13, 56, 141),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverAppBar.large(
-            expandedHeight: size.height * 0.1,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                isDark
-                    ? 'assets/img/dashboard_dark.png'
-                    : 'assets/img/dashboard_light.png',
-                fit: BoxFit.cover,
-              ),
-              expandedTitleScale: 1.0,
-              stretchModes: [StretchMode.zoomBackground],
-            ),
-            title: const Text('Small steps, big results. Keep going!'),
-            automaticallyImplyLeading: false,
-            elevation: 0,
-            pinned: true,
-          ),
+          header(size, context, isDark),
         ],
         body: BlocBuilder<HabitsBloc, HabitsState>(
           builder: (context, state) {
@@ -130,5 +113,26 @@ class _RoutineScreenState extends State<RoutineScreen> {
       ),
       floatingActionButton: NewRoutine(isDark: isDark),
     );
+  }
+
+  SliverAppBar header(Size size, BuildContext context, bool isDark) {
+    return SliverAppBar.large(
+          expandedHeight: size.height * 0.1,
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          flexibleSpace: FlexibleSpaceBar(
+            background: Image.asset(
+              isDark
+                  ? 'assets/img/dashboard_dark.png'
+                  : 'assets/img/dashboard_light.png',
+              fit: BoxFit.cover,
+            ),
+            expandedTitleScale: 1.0,
+            stretchModes: [StretchMode.zoomBackground],
+          ),
+          title: const Text('Small steps, big results. Keep going!'),
+          automaticallyImplyLeading: false,
+          elevation: 0,
+          pinned: true,
+        );
   }
 }

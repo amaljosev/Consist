@@ -28,8 +28,10 @@ class NewRoutine extends StatelessWidget {
                     RoutineTile(
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              CreateScreen(type: HabitType.develop),
+                          builder: (context) => CreateScreen(
+                            habit: null,
+                            type: HabitType.develop,
+                          ),
                         ),
                       ),
                       title: 'Habits to Develop',
@@ -45,7 +47,7 @@ class NewRoutine extends StatelessWidget {
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) =>
-                              CreateScreen(type: HabitType.quit),
+                              CreateScreen(habit: null, type: HabitType.quit),
                         ),
                       ),
                       title: 'Habits to Quit',
@@ -61,7 +63,7 @@ class NewRoutine extends StatelessWidget {
                       onTap: () => Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) =>
-                              CreateScreen(type: HabitType.task),
+                              CreateScreen(habit: null, type: HabitType.task),
                         ),
                       ),
                       title: 'Task',

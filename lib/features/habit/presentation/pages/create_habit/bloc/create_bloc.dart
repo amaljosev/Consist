@@ -57,21 +57,26 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(
-        CreateInitial(
-          habit: currentState.habit.copyWith(
-            habitType: event.type.name,
-            habitIconId: CommonFunctions.getRandomNumber(
-              0,
-              HabitsItems.iconList.length - 1,
-            ).toString(),
-            habitColorId: CommonFunctions.getRandomNumber(
-              0,
-              AppColors.myColors.length - 1,
-            ).toString(),
+      if (event.habit != null) {
+      
+        emit(CreateInitial(habit: event.habit!));
+      } else {
+        emit(
+          CreateInitial(
+            habit: currentState.habit.copyWith(
+              habitType: event.type.name,
+              habitIconId: CommonFunctions.getRandomNumber(
+                0,
+                HabitsItems.iconList.length - 1,
+              ).toString(),
+              habitColorId: CommonFunctions.getRandomNumber(
+                0,
+                AppColors.myColors.length - 1,
+              ).toString(),
+            ),
           ),
-        ),
-      );
+        );
+      }
     }
   }
 

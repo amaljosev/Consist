@@ -66,6 +66,7 @@ Future<void> showNoteDialog(
         actions: [
           TextButton(
             onPressed: () {
+              noteController.text='';
               Navigator.pop(context);
             },
             child: const Text('Cancel'),
