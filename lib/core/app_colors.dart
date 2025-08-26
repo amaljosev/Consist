@@ -20,26 +20,27 @@ class AppColors {
   static const Color brown = Color(0xFFD7CCC8);
   static const Color grey = Color(0xFFF5F5F5);
   static const Color blueGrey = Color(0xFFCFD8DC);
-  static const List myColors = [
-    red,
-    pink,
-    purple,
-    deepPurple,
-    indigo,
-    blue,
-    lightBlue,
-    cyan,
-    teal,
-    green,
-    lightGreen,
-    lime,
-    yellow,
-    amber,
-    orange,
-    deepOrange,
-    brown,
-    blueGrey,
+  static const List<Map<String, dynamic>> myColors = [
+    {"id": "0", "color": red},
+    {"id": "1", "color": pink},
+    {"id": "2", "color": purple},
+    {"id": "3", "color": deepPurple},
+    {"id": "4", "color": indigo},
+    {"id": "5", "color": blue},
+    {"id": "6", "color": lightBlue},
+    {"id": "7", "color": cyan},
+    {"id": "8", "color": teal},
+    {"id": "9", "color": green},
+    {"id": "10", "color": lightGreen},
+    {"id": "11", "color": lime},
+    {"id": "12", "color": yellow},
+    {"id": "13", "color": amber},
+    {"id": "14", "color": orange},
+    {"id": "15", "color": deepOrange},
+    {"id": "16", "color": brown},
+    {"id": "17", "color": blueGrey},
   ];
+
   static const Color redDark = Color(0xFFEF5350);
   static const Color pinkDark = Color(0xFFF06292);
   static const Color purpleDark = Color(0xFFBA68C8);
@@ -60,25 +61,24 @@ class AppColors {
   static const Color greyDark = Color(0xFF9E9E9E);
   static const Color blueGreyDark = Color(0xFF90A4AE);
 
-  static const List<Color> myColorsDarker = [
-    redDark,
-    pinkDark,
-    purpleDark,
-    deepPurpleDark,
-    indigoDark,
-    blueDark,
-    lightBlueDark,
-    cyanDark,
-    tealDark,
-    greenDark,
-    lightGreenDark,
-    limeDark,
-    yellowDark,
-    amberDark,
-    orangeDark,
-    deepOrangeDark,
-    brownDark,
-    greenDark,
-    blueGreyDark,
+  static const List<Map<String, dynamic>> myColorsDarker = [
+    {"id": "18", "color": redDark},
+    {"id": "19", "color": pinkDark},
+    {"id": "20", "color": purpleDark},
+    {"id": "21", "color": deepPurpleDark},
+    {"id": "22", "color": indigoDark},
+    {"id": "23", "color": blueDark},
+    {"id": "24", "color": lightBlueDark},
+    {"id": "25", "color": cyanDark},
+    {"id": "26", "color": tealDark},
+    {"id": "27", "color": greenDark},
+    {"id": "28", "color": lightGreenDark},
+    {"id": "29", "color": limeDark},
+    {"id": "30", "color": yellowDark},
+    {"id": "31", "color": amberDark},
+    {"id": "32", "color": orangeDark},
+    {"id": "33", "color": deepOrangeDark},
+    {"id": "34", "color": brownDark},
+    {"id": "35", "color": blueGreyDark},
   ];
 }

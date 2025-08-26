@@ -36,7 +36,7 @@ class UpdateHabitNoteEvent extends CreateEvent {
 }
 
 class UpdateHabitIconEvent extends CreateEvent {
-  final IconData icon;
+  final String icon;
 
   const UpdateHabitIconEvent(this.icon);
 
@@ -54,7 +54,7 @@ class UpdateHabitTypeEvent extends CreateEvent {
 }
 
 class UpdateHabitColorEvent extends CreateEvent {
-  final Color color;
+  final String color;
 
   const UpdateHabitColorEvent(this.color);
 
@@ -63,7 +63,7 @@ class UpdateHabitColorEvent extends CreateEvent {
 }
 
 class UpdateHabitStartAtEvent extends CreateEvent {
-  final DateTime startAt;
+  final String startAt;
 
   const UpdateHabitStartAtEvent(this.startAt);
 
@@ -99,30 +99,12 @@ class UpdateHabitRepeatValueEvent extends CreateEvent {
 }
 
 class UpdateRepeatDaysEvent extends CreateEvent {
-  final int repeatDays;
+  final String repeatDays;
 
   const UpdateRepeatDaysEvent(this.repeatDays);
 
   @override
   List<Object?> get props => [repeatDays];
-}
-
-class UpdateWeekDaysEvent extends CreateEvent {
-  final List<int> weekDays;
-
-  const UpdateWeekDaysEvent(this.weekDays);
-
-  @override
-  List<Object?> get props => [weekDays];
-}
-
-class UpdateMonthDaysEvent extends CreateEvent {
-  final List<int> monthDays;
-
-  const UpdateMonthDaysEvent(this.monthDays);
-
-  @override
-  List<Object?> get props => [monthDays];
 }
 
 class UpdateHabitRemindTimeEvent extends CreateEvent {

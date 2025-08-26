@@ -1,8 +1,10 @@
 import 'dart:io';
-import 'package:consist/core/app_colors.dart';
 import 'package:consist/core/constants/habits_items.dart';
 import 'package:consist/core/utils/common_functions.dart';
+import 'package:consist/core/utils/converters.dart';
 import 'package:consist/core/widgets/loading_widget.dart';
+import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
+import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_bloc.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/bloc/create_bloc.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/add_note_widget.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/bg_color_picker.dart';
@@ -28,29 +30,11 @@ class CreateScreen extends StatefulWidget {
 class _CreateScreenState extends State<CreateScreen> {
   final noteController = TextEditingController();
   final nameController = TextEditingController();
-
+  final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     // Initialize with the widget type
     context.read<CreateBloc>().add(InitializeCreateEvent(widget.type));
-
-    // Set random color and icon
-    context.read<CreateBloc>().add(
-      UpdateHabitColorEvent(
-        AppColors.myColors[CommonFunctions.getRandomNumber(
-          0,
-          AppColors.myColors.length - 1,
-        )],
-      ),
-    );
-    context.read<CreateBloc>().add(
-      UpdateHabitIconEvent(
-        HabitsItems.habitIcons[CommonFunctions.getRandomNumber(
-          0,
-          HabitsItems.habitIcons.length - 1,
-        )],
-      ),
-    );
     super.initState();
   }
 
@@ -60,8 +44,6 @@ class _CreateScreenState extends State<CreateScreen> {
     nameController.dispose();
     super.dispose();
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +69,13 @@ class _CreateScreenState extends State<CreateScreen> {
       builder: (context, state) {
         if (state is CreateInitial) {
           final habit = state.habit;
+
           return Scaffold(
-            backgroundColor: habit.habitColor,
+            backgroundColor: CommonFunctions.getColorById(habit.habitColorId!),
             appBar: AppBar(
-              backgroundColor: habit.habitColor,
+              backgroundColor: CommonFunctions.getColorById(
+                habit.habitColorId!,
+              ),
               surfaceTintColor: Colors.transparent,
               leading: IconButton(
                 icon: Icon(
@@ -101,9 +86,9 @@ class _CreateScreenState extends State<CreateScreen> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () {
-                    
-                  },
+                  onPressed: () => _formKey.currentState!.validate()
+                      ? _createHabit(context, habit)
+                      : null,
                   child: Text(
                     'Create',
                     style: Theme.of(context).textTheme.headlineSmall!.copyWith(
@@ -117,92 +102,115 @@ class _CreateScreenState extends State<CreateScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: SafeArea(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    spacing: 20,
-                    children: [
-                      HabitIcon(isDark: isDark, icon: habit.habitIcon!),
-                      TextFormField(
-                        controller: nameController,
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration.collapsed(
-                          hintText: 'New Habit',
-                          hintStyle: Theme.of(context).textTheme.headlineMedium!
-                              .copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.black38,
-                              ),
-                        ),
-                        style: Theme.of(context).textTheme.headlineMedium!
-                            .copyWith(color: Colors.black),
-                        maxLength: 40,
-                        maxLines: null,
-                        cursorWidth: 4,
-                        onChanged: (val) {
-                          context.read<CreateBloc>().add(
-                            UpdateHabitNameEvent(val),
-                          );
-                        },
-                      ),
-                      HabitColor(bgClr: habit.habitColor),
-
-                      Card(
-                        color: isDark ? Colors.black26 : null,
-                        child: Padding(
-                          padding: const EdgeInsets.all(15),
-                          child: Column(
-                            children: [
-                              HabitTypeWidget(
-                                habitType: habit.habitType ?? widget.type.name,
-                                isDark: isDark,
-                              ),
-                              Divider(
-                                height: 0,
-                                color: isDark ? null : Colors.black12,
-                              ),
-
-                              HabitStartAtWidget(
-                                habitStartAt: habit.habitStartAt,
-                                isDark: isDark,
-                              ),
-                              Divider(
-                                height: 0,
-                                color: isDark ? null : Colors.black12,
-                              ),
-
-                              HabitTimeWidget(habitTime: habit.habitTime),
-                              Divider(
-                                height: 0,
-                                color: isDark ? null : Colors.black12,
-                              ),
-
-                              if (habit.habitType != 'task')
-                                HabitRepeatWidget(
-                                  habitRepeat: habit.habitRepeatValue,
-
-                                  bgColor: habit.habitColor,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      spacing: 20,
+                      children: [
+                        HabitIcon(isDark: isDark, icon: habit.habitIconId),
+                        TextFormField(
+                          controller: nameController,
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration.collapsed(
+                            hintText: 'New Habit',
+                            hintStyle: Theme.of(context)
+                                .textTheme
+                                .headlineMedium!
+                                .copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.black38,
                                 ),
-                              Divider(
-                                height: 0,
-                                color: isDark ? null : Colors.black12,
-                              ),
-                              DurationWidget(habitEndAt: habit.habitEndAt),
-                              Divider(
-                                height: 0,
-                                color: isDark ? null : Colors.black12,
-                              ),
+                          ),
+                          style: Theme.of(context).textTheme.headlineMedium!
+                              .copyWith(color: Colors.black),
+                          maxLength: 40,
+                          maxLines: null,
+                          cursorWidth: 4,
+                          onChanged: (val) {
+                            context.read<CreateBloc>().add(
+                              UpdateHabitNameEvent(val),
+                            );
+                          },
 
-                              HabitRemainderWidget(time: habit.habitRemindTime),
-                            ],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a habit name';
+                            }
+                            return null;
+                          },
+                        ),
+                        HabitColor(
+                          bgClr: CommonFunctions.getColorById(
+                            habit.habitColorId!,
                           ),
                         ),
-                      ),
 
-                      AddNoteWidget(
-                        isDark: isDark,
-                        noteController: noteController,
-                      ),
-                    ],
+                        Card(
+                          color: isDark ? Colors.black26 : null,
+                          child: Padding(
+                            padding: const EdgeInsets.all(15),
+                            child: Column(
+                              children: [
+                                HabitTypeWidget(
+                                  habitType:
+                                      habit.habitType ?? widget.type.name,
+                                  isDark: isDark,
+                                ),
+                                Divider(
+                                  height: 0,
+                                  color: isDark ? null : Colors.black12,
+                                ),
+
+                                HabitStartAtWidget(
+                                  habitStartAt: AppConverters.stringToDateTime(
+                                    habit.habitStartAt,
+                                  ),
+                                  isDark: isDark,
+                                ),
+                                Divider(
+                                  height: 0,
+                                  color: isDark ? null : Colors.black12,
+                                ),
+
+                                HabitTimeWidget(habitTime: habit.habitTime),
+                                Divider(
+                                  height: 0,
+                                  color: isDark ? null : Colors.black12,
+                                ),
+
+                                if (habit.habitType != 'task')
+                                  HabitRepeatWidget(
+                                    habitRepeat: habit.habitRepeatValue,
+
+                                    bgColor: AppConverters.stringToColor(
+                                      habit.habitColorId,
+                                    ),
+                                  ),
+                                Divider(
+                                  height: 0,
+                                  color: isDark ? null : Colors.black12,
+                                ),
+                                DurationWidget(habitEndAt: habit.habitEndAt),
+                                Divider(
+                                  height: 0,
+                                  color: isDark ? null : Colors.black12,
+                                ),
+
+                                HabitRemainderWidget(
+                                  time: habit.habitRemindTime,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        AddNoteWidget(
+                          isDark: isDark,
+                          noteController: noteController,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -215,5 +223,25 @@ class _CreateScreenState extends State<CreateScreen> {
         }
       },
     );
+  }
+
+  void _createHabit(BuildContext context, Habit habit) {
+    final newHabit = Habit(
+      id: DateTime.now().toString(),
+      habitName: nameController.text,
+      habitColorId: habit.habitColorId,
+      habitEndAt: habit.habitEndAt ?? 'Off',
+      habitIconId: habit.habitIconId,
+      habitRemindTime: habit.habitRemindTime ?? 'Off',
+      habitRepeatValue: habit.habitRepeatValue ?? 'Daily',
+      habitStartAt: habit.habitStartAt ?? 'Today',
+      habitTime: habit.habitTime ?? 'Anytime',
+      habitType: habit.habitType,
+      note: noteController.text,
+      repeatDays: habit.repeatDays,
+    );
+    context.read<HabitsBloc>().add(AddHabitEvent(newHabit));
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 }

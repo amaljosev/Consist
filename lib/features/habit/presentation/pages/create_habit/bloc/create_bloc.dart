@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:consist/core/app_colors.dart';
 import 'package:consist/core/constants/habits_items.dart';
+import 'package:consist/core/utils/common_functions.dart';
 import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -13,16 +15,14 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
     on<InitializeCreateEvent>(_onInitialize);
     on<UpdateHabitNameEvent>(_onUpdateHabitName);
     on<UpdateHabitNoteEvent>(_onUpdateHabitNote);
-    on<UpdateHabitIconEvent>(_onUpdateHabitIcon);
+    on<UpdateHabitIconEvent>(_onUpdateHabitIconId);
     on<UpdateHabitTypeEvent>(_onUpdateHabitType);
-    on<UpdateHabitColorEvent>(_onUpdateHabitColor);
+    on<UpdateHabitColorEvent>(_onUpdateHabitColorId);
     on<UpdateHabitStartAtEvent>(_onUpdateHabitStartAt);
     on<UpdateHabitTimeEvent>(_onUpdateHabitTime);
     on<UpdateHabitEndAtEvent>(_onUpdateHabitEndAt);
     on<UpdateHabitRepeatValueEvent>(_onUpdateHabitRepeatValue);
     on<UpdateRepeatDaysEvent>(_onUpdateRepeatDays);
-    on<UpdateWeekDaysEvent>(_onUpdateWeekDays);
-    on<UpdateMonthDaysEvent>(_onUpdateMonthDays);
     on<UpdateHabitRemindTimeEvent>(_onUpdateHabitRemindTime);
     on<SaveHabitEvent>(_onSaveHabit);
     on<ResetCreateEvent>(_onReset);
@@ -30,10 +30,13 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
 
   static Habit _createInitialHabit() {
     return Habit(
-      id:  DateTime.now().toString(),
+      id: DateTime.now().toString(),
       habitName: null,
       note: null,
-      habitIcon: Icons.rocket_launch_outlined,
+      habitIconId: CommonFunctions.getRandomNumber(
+        0,
+        HabitsItems.iconList.length - 1,
+      ).toString(),
       habitType: null,
       habitStartAt: null,
       habitTime: null,
@@ -41,7 +44,10 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
       habitRepeatValue: null,
       repeatDays: null,
       habitRemindTime: null,
-      habitColor: Colors.blue,
+      habitColorId: CommonFunctions.getRandomNumber(
+        0,
+        AppColors.myColors.length - 1,
+      ).toString(),
     );
   }
 
@@ -51,11 +57,21 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(
-          habitType: event.type.name,
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(
+            habitType: event.type.name,
+            habitIconId: CommonFunctions.getRandomNumber(
+              0,
+              HabitsItems.iconList.length - 1,
+            ).toString(),
+            habitColorId: CommonFunctions.getRandomNumber(
+              0,
+              AppColors.myColors.length - 1,
+            ).toString(),
+          ),
         ),
-      ));
+      );
     }
   }
 
@@ -65,9 +81,11 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(habitName: event.habitName),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(habitName: event.habitName),
+        ),
+      );
     }
   }
 
@@ -77,21 +95,21 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(note: event.note),
-      ));
+      emit(CreateInitial(habit: currentState.habit.copyWith(note: event.note)));
     }
   }
 
-  Future<void> _onUpdateHabitIcon(
+  Future<void> _onUpdateHabitIconId(
     UpdateHabitIconEvent event,
     Emitter<CreateState> emit,
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(habitIcon: event.icon),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(habitIconId: event.icon),
+        ),
+      );
     }
   }
 
@@ -101,21 +119,25 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(habitType: event.type),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(habitType: event.type),
+        ),
+      );
     }
   }
 
-  Future<void> _onUpdateHabitColor(
+  Future<void> _onUpdateHabitColorId(
     UpdateHabitColorEvent event,
     Emitter<CreateState> emit,
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(habitColor: event.color),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(habitColorId: event.color),
+        ),
+      );
     }
   }
 
@@ -125,9 +147,11 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(habitStartAt: event.startAt),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(habitStartAt: event.startAt),
+        ),
+      );
     }
   }
 
@@ -137,9 +161,11 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(habitTime: event.time),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(habitTime: event.time),
+        ),
+      );
     }
   }
 
@@ -149,9 +175,11 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(habitEndAt: event.endAt),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(habitEndAt: event.endAt),
+        ),
+      );
     }
   }
 
@@ -161,9 +189,13 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(habitRepeatValue: event.repeatValue),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(
+            habitRepeatValue: event.repeatValue,
+          ),
+        ),
+      );
     }
   }
 
@@ -173,33 +205,11 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(repeatDays: event.repeatDays),
-      ));
-    }
-  }
-
-  Future<void> _onUpdateWeekDays(
-    UpdateWeekDaysEvent event,
-    Emitter<CreateState> emit,
-  ) async {
-    final currentState = state;
-    if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(weekDays: event.weekDays),
-      ));
-    }
-  }
-
-  Future<void> _onUpdateMonthDays(
-    UpdateMonthDaysEvent event,
-    Emitter<CreateState> emit,
-  ) async {
-    final currentState = state;
-    if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(monthDays: event.monthDays),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(repeatDays: event.repeatDays),
+        ),
+      );
     }
   }
 
@@ -209,9 +219,11 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
   ) async {
     final currentState = state;
     if (currentState is CreateInitial) {
-      emit(CreateInitial(
-        habit: currentState.habit.copyWith(habitRemindTime: event.remindTime),
-      ));
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(habitRemindTime: event.remindTime),
+        ),
+      );
     }
   }
 
@@ -229,8 +241,8 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
         return;
       }
 
-      if (habit.habitIcon == null) {
-        emit(CreateValidationError('habitIcon', 'Please select an icon'));
+      if (habit.habitIconId == null) {
+        emit(CreateValidationError('habitIconId', 'Please select an icon'));
         return;
       }
 
@@ -243,11 +255,13 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
 
       try {
         // Here you would save to database/local storage
-        await Future.delayed(const Duration(milliseconds: 500)); // Simulate save
+        await Future.delayed(
+          const Duration(milliseconds: 500),
+        ); // Simulate save
 
         // Emit success and reset
         emit(CreateSuccess('Habit created successfully'));
-        
+
         // Reset to initial state after success
         add(ResetCreateEvent());
       } catch (e) {

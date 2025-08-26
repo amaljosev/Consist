@@ -10,7 +10,7 @@ class HabitRepeatWrapper extends StatelessWidget {
   const HabitRepeatWrapper({super.key, this.habitRepeat, this.bgColor});
   final String? habitRepeat;
   final Color? bgColor;
-  
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -51,38 +51,46 @@ class HabitRepeatWidget extends StatelessWidget {
                   return ListTile(
                     title: Text(value.name),
                     onTap: () async {
+                      final bloc = context
+                          .read<CreateBloc>(); // store reference
+
                       if (value.name == 'daily') {
-                        context.read<CreateBloc>().add(
-                          UpdateHabitRepeatValueEvent('daily'),
-                        );
+                        bloc.add(UpdateHabitRepeatValueEvent('daily'));
+                        if (!context.mounted) return;
                         Navigator.of(context).pop();
                       } else {
-                        Map<String, dynamic>? result =
-                            await Navigator.of(context).push(
+                        final result = await Navigator.of(context)
+                            .push<Map<String, dynamic>>(
                               MaterialPageRoute(
                                 builder: (context) =>
                                     HabitRepeatScreen(bgColor: bgColor),
                               ),
                             );
 
+                        if (!context.mounted) return; 
+
                         if (result != null) {
                           String repeatValue = '';
+
                           if (result.keys.first == 'day') {
                             repeatValue = 'Every ${result.values.first} day';
-                            context.read<CreateBloc>().add(
-                              UpdateRepeatDaysEvent(result.values.first),
+
+                            bloc.add(
+                              UpdateRepeatDaysEvent(
+                                result.values.first.toString(),
+                              ),
                             );
-                            context.read<CreateBloc>().add(
-                              UpdateHabitRepeatValueEvent(repeatValue),
-                            );
+                            bloc.add(UpdateHabitRepeatValueEvent(repeatValue));
+
                             Navigator.of(context).pop();
                           } else if (result.keys.first == 'month') {
                             List<int> allDays =
                                 (result.values.first as Set<int>).toList()
                                   ..sort();
+
                             if (allDays.length == 31) {
                               repeatValue = 'daily';
-                              context.read<CreateBloc>().add(
+                              bloc.add(
                                 UpdateHabitRepeatValueEvent(repeatValue),
                               );
                               Navigator.of(context).pop();
@@ -93,25 +101,24 @@ class HabitRepeatWidget extends StatelessWidget {
                               String days = allDays.join(', ');
                               repeatValue = 'Every month on $days';
                             }
-                            context.read<CreateBloc>().add(
-                              UpdateMonthDaysEvent(allDays),
-                            );
-                            context.read<CreateBloc>().add(
-                              UpdateHabitRepeatValueEvent(repeatValue),
-                            );
+
+                            bloc.add(UpdateRepeatDaysEvent(allDays.toString()));
+                            bloc.add(UpdateHabitRepeatValueEvent(repeatValue));
+
                             Navigator.of(context).pop();
                           } else {
                             List<int> allDays =
                                 (result.values.first as Set<int>).toList()
                                   ..sort();
+
                             if (allDays.length == 2 &&
                                 allDays.contains(0) &&
                                 allDays.contains(6)) {
                               repeatValue = 'Every Weekend';
-                              context.read<CreateBloc>().add(
-                                UpdateWeekDaysEvent(allDays),
+                              bloc.add(
+                                UpdateRepeatDaysEvent(allDays.toString()),
                               );
-                              context.read<CreateBloc>().add(
+                              bloc.add(
                                 UpdateHabitRepeatValueEvent(repeatValue),
                               );
                               Navigator.of(context).pop();
@@ -119,16 +126,16 @@ class HabitRepeatWidget extends StatelessWidget {
                                 !allDays.contains(0) &&
                                 !allDays.contains(6)) {
                               repeatValue = 'Every Weekdays';
-                              context.read<CreateBloc>().add(
-                                UpdateWeekDaysEvent(allDays),
+                              bloc.add(
+                                UpdateRepeatDaysEvent(allDays.toString()),
                               );
-                              context.read<CreateBloc>().add(
+                              bloc.add(
                                 UpdateHabitRepeatValueEvent(repeatValue),
                               );
                               Navigator.of(context).pop();
                             } else if (allDays.length == 7) {
                               repeatValue = 'daily';
-                              context.read<CreateBloc>().add(
+                              bloc.add(
                                 UpdateHabitRepeatValueEvent(repeatValue),
                               );
                               Navigator.of(context).pop();
@@ -137,10 +144,10 @@ class HabitRepeatWidget extends StatelessWidget {
                                   .map((i) => HabitsItems.weekdays[i])
                                   .join(", ");
                               repeatValue = 'Every week on $days';
-                              context.read<CreateBloc>().add(
-                                UpdateWeekDaysEvent(allDays),
+                              bloc.add(
+                                UpdateRepeatDaysEvent(allDays.toString()),
                               );
-                              context.read<CreateBloc>().add(
+                              bloc.add(
                                 UpdateHabitRepeatValueEvent(repeatValue),
                               );
                               Navigator.of(context).pop();

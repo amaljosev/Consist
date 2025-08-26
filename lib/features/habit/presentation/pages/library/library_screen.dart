@@ -84,7 +84,10 @@ class _LibraryScreenState extends State<LibraryScreen>
             ListView.builder(
               padding: const EdgeInsets.all(5),
               itemBuilder: (context, index) {
-                Color color = AppColors.myColorsDarker[index];
+               
+                  final lightColorData = AppColors.myColorsDarker[index];
+                  Color color=lightColorData['color'];
+                  
                 final habit = HabitsItems.habitsToDevelop[index];
                 return ListTile(
                   leading: Icon(habit['icon'], color: color),
@@ -97,10 +100,13 @@ class _LibraryScreenState extends State<LibraryScreen>
             ListView.builder(
               padding: const EdgeInsets.all(5),
               itemBuilder: (context, index) {
-                Color color = AppColors.myColorsDarker[index];
+               
+                  final lightColorData = AppColors.myColors[index];
+                  Color lightColor=lightColorData['color'];
+                  
                 final habit = HabitsItems.habitsToQuit[index];
                 return ListTile(
-                  leading: Icon(habit['icon'], color: color),
+                  leading: Icon(habit['icon'], color: lightColor),
                   title: Text(habit['name']),
                   trailing: CupertinoListTileChevron(),
                 );
@@ -110,10 +116,13 @@ class _LibraryScreenState extends State<LibraryScreen>
             ListView.builder(
               padding: const EdgeInsets.all(5),
               itemBuilder: (context, index) {
-                Color color = AppColors.myColorsDarker[index];
+               
+                  final lightColorData = AppColors.myColors[index];
+                  Color lightColor=lightColorData['color'];
+                  
                 final habit = HabitsItems.singleTimeTasks[index];
                 return ListTile(
-                  leading: Icon(habit['icon'], color: color),
+                  leading: Icon(habit['icon'], color: lightColor),
                   title: Text(habit['name']),
                   trailing: CupertinoListTileChevron(),
                 );

@@ -191,85 +191,134 @@ class HabitsItems {
     },
   ];
 
-  static const List<IconData> habitIcons = [
-  // 🔵 Health & Wellness
-  Icons.fitness_center_outlined, // Workout
-  Icons.directions_run_outlined, // Running
-  Icons.sports_basketball_outlined, // Sports
-  Icons.pedal_bike_outlined, // Cycling
-  Icons.pool_outlined, // Swimming
-  Icons.self_improvement_outlined, // Meditation / Yoga
-  Icons.local_dining_outlined, // Eating healthy
-  Icons.set_meal_outlined, // Meal prep
-  Icons.water_drop_outlined, // Hydration
-  Icons.eco_outlined, // Nature / Walk
-  CupertinoIcons.heart, // Heart health
-  CupertinoIcons.sun_max, // Morning routine
-  CupertinoIcons.moon, // Night routine
-  Icons.bedtime_outlined, // Sleep tracking
-  Icons.spa_outlined, // Relaxation
-  Icons.healing_outlined, // Health recovery
-  Icons.monitor_heart_outlined, // Heart rate
-
-  // 🟢 Productivity & Learning
-  Icons.menu_book_outlined, // Reading
-  Icons.auto_stories_outlined, // Daily reading
-  Icons.edit_outlined, // Journaling
-  Icons.school_outlined, // Studying
-  Icons.lightbulb_outline, // New idea
-  Icons.alarm_outlined, // Wake up early
-  Icons.alarm_on_outlined, // Time discipline
-  Icons.laptop_mac_outlined, // Work or study
-  Icons.keyboard_outlined, // Typing / Coding
-  CupertinoIcons.book, // Learning
-  CupertinoIcons.time, // Time management
-  CupertinoIcons.doc_text, // Writing
-  CupertinoIcons.news, // Daily updates
-
-  // 🟣 Mindfulness & Self Growth
-  Icons.check_circle_outline, // Task completion
-  Icons.psychology_outlined, // Mindfulness
-  Icons.volunteer_activism_outlined, // Gratitude
-  Icons.wb_sunny_outlined, // Positive thinking
-  Icons.auto_graph_outlined, // Progress
-  Icons.insights_outlined, // Self-reflection
-  Icons.handshake_outlined, // Kindness
-  Icons.favorite_border, // Self-love
-  Icons.shield_outlined, // Confidence
-  Icons.catching_pokemon, // Curiosity (no outlined version)
-
-  // 🟠 Lifestyle & Routine
-  Icons.cleaning_services_outlined, // Cleaning habit
-  Icons.local_florist_outlined, // Gardening
-  Icons.shopping_cart_outlined, // Grocery shopping
-  Icons.attach_money_outlined, // Budgeting
-  Icons.pets_outlined, // Pet care
-  Icons.music_note_outlined, // Music practice
-  Icons.brush_outlined, // Art / creativity
-  Icons.construction_outlined, // DIY / craft
-  CupertinoIcons.calendar, // Schedule
-  CupertinoIcons.briefcase, // Work habit
-  CupertinoIcons.scissors, // Grooming
-  CupertinoIcons.house, // Home care
-  CupertinoIcons.wand_stars, // Self-care
-
-  // 🟡 Social & Digital Habits
-  Icons.phone_outlined, // Call someone
-  Icons.mail_outline, // Respond to email
-  Icons.sms_outlined, // Message someone
-  Icons.groups_outlined, // Social bonding
-  Icons.public_outlined, // Learn new culture
-  Icons.lock_clock, // Digital detox (no outlined)
-  Icons.no_photography_outlined, // Privacy habit
-  CupertinoIcons.device_phone_portrait, // App usage
-  CupertinoIcons.chat_bubble, // Communication
-
-  // 🟤 Motivation / Meta
-  Icons.star_outline, // Reward / streak
-  Icons.flag_outlined, // Habit goal
-  Icons.track_changes_outlined, // Long-term goal
-  Icons.rocket_launch_outlined, // Start a new habit
-  Icons.upgrade_outlined, // Improve habit
-];
-
+  static const List<Map<String, dynamic>> iconList = [
+    // 🔵 Health & Wellness
+    {"id": 1, "name": "workout", "icon": Icons.fitness_center_outlined},
+    {"id": 2, "name": "running", "icon": Icons.directions_run_outlined},
+    {"id": 3, "name": "sports", "icon": Icons.sports_basketball_outlined},
+    {"id": 4, "name": "cycling", "icon": Icons.pedal_bike_outlined},
+    {"id": 5, "name": "swimming", "icon": Icons.pool_outlined},
+    {"id": 6, "name": "meditation", "icon": Icons.self_improvement_outlined},
+    {"id": 7, "name": "eating_healthy", "icon": Icons.local_dining_outlined},
+    {"id": 8, "name": "meal_prep", "icon": Icons.set_meal_outlined},
+    {"id": 9, "name": "hydration", "icon": Icons.water_drop_outlined},
+    {"id": 10, "name": "nature_walk", "icon": Icons.eco_outlined},
+    {"id": 11, "name": "heart_health", "icon": CupertinoIcons.heart},
+    {"id": 12, "name": "morning_routine", "icon": CupertinoIcons.sun_max},
+    {"id": 13, "name": "night_routine", "icon": CupertinoIcons.moon},
+    {"id": 14, "name": "sleep", "icon": Icons.bedtime_outlined},
+    {"id": 15, "name": "relaxation", "icon": Icons.spa_outlined},
+    {"id": 16, "name": "recovery", "icon": Icons.healing_outlined},
+    {"id": 17, "name": "heart_rate", "icon": Icons.monitor_heart_outlined},
+    {"id": 18, "name": "hiking", "icon": Icons.hiking}, // NEW: Outdoor activity
+    {
+      "id": 19,
+      "name": "balance",
+      "icon": Icons.balance_outlined,
+    }, // NEW: Posture / balance exercise
+    // 🟢 Productivity & Learning
+    {"id": 20, "name": "reading", "icon": Icons.menu_book_outlined},
+    {"id": 21, "name": "daily_reading", "icon": Icons.auto_stories_outlined},
+    {"id": 22, "name": "journaling", "icon": Icons.edit_outlined},
+    {"id": 23, "name": "studying", "icon": Icons.school_outlined},
+    {"id": 24, "name": "new_idea", "icon": Icons.lightbulb_outline},
+    {"id": 25, "name": "wake_early", "icon": Icons.alarm_outlined},
+    {"id": 26, "name": "time_discipline", "icon": Icons.alarm_on_outlined},
+    {"id": 27, "name": "work_study", "icon": Icons.laptop_mac_outlined},
+    {"id": 28, "name": "coding", "icon": Icons.keyboard_outlined},
+    {"id": 29, "name": "learning", "icon": CupertinoIcons.book},
+    {"id": 30, "name": "time_management", "icon": CupertinoIcons.time},
+    {"id": 31, "name": "writing", "icon": CupertinoIcons.doc_text},
+    {"id": 32, "name": "daily_updates", "icon": CupertinoIcons.news},
+    {
+      "id": 33,
+      "name": "planning",
+      "icon": Icons.task_outlined,
+    }, // NEW: Daily planning habit
+    {
+      "id": 34,
+      "name": "tracking",
+      "icon": Icons.list_alt_outlined,
+    }, // NEW: To-do / habit tracker
+    // 🟣 Mindfulness & Self Growth
+    {"id": 35, "name": "task_completion", "icon": Icons.check_circle_outline},
+    {"id": 36, "name": "mindfulness", "icon": Icons.psychology_outlined},
+    {"id": 37, "name": "gratitude", "icon": Icons.volunteer_activism_outlined},
+    {"id": 38, "name": "positivity", "icon": Icons.wb_sunny_outlined},
+    {"id": 39, "name": "progress", "icon": Icons.auto_graph_outlined},
+    {"id": 40, "name": "reflection", "icon": Icons.insights_outlined},
+    {"id": 41, "name": "kindness", "icon": Icons.handshake_outlined},
+    {"id": 42, "name": "self_love", "icon": Icons.favorite_border},
+    {"id": 43, "name": "confidence", "icon": Icons.shield_outlined},
+    {"id": 44, "name": "curiosity", "icon": Icons.catching_pokemon},
+    {
+      "id": 45,
+      "name": "calmness",
+      "icon": Icons.nightlight_outlined,
+    }, // NEW: Staying calm habit
+    // 🟠 Lifestyle & Routine
+    {"id": 46, "name": "cleaning", "icon": Icons.cleaning_services_outlined},
+    {"id": 47, "name": "gardening", "icon": Icons.local_florist_outlined},
+    {"id": 48, "name": "grocery", "icon": Icons.shopping_cart_outlined},
+    {"id": 49, "name": "budgeting", "icon": Icons.attach_money_outlined},
+    {"id": 50, "name": "pet_care", "icon": Icons.pets_outlined},
+    {"id": 51, "name": "music", "icon": Icons.music_note_outlined},
+    {"id": 52, "name": "art", "icon": Icons.brush_outlined},
+    {"id": 53, "name": "diy", "icon": Icons.construction_outlined},
+    {"id": 54, "name": "schedule", "icon": CupertinoIcons.calendar},
+    {"id": 55, "name": "work", "icon": CupertinoIcons.briefcase},
+    {"id": 56, "name": "grooming", "icon": CupertinoIcons.scissors},
+    {"id": 57, "name": "home_care", "icon": CupertinoIcons.house},
+    {"id": 58, "name": "self_care", "icon": CupertinoIcons.wand_stars},
+    {
+      "id": 59,
+      "name": "cooking",
+      "icon": Icons.kitchen_outlined,
+    }, // NEW: Cooking habit
+    {
+      "id": 60,
+      "name": "organization",
+      "icon": Icons.folder_open_outlined,
+    }, // NEW: Organizing things
+    // 🟡 Social & Digital Habits
+    {"id": 61, "name": "call", "icon": Icons.phone_outlined},
+    {"id": 62, "name": "email", "icon": Icons.mail_outline},
+    {"id": 63, "name": "message", "icon": Icons.sms_outlined},
+    {"id": 64, "name": "social", "icon": Icons.groups_outlined},
+    {"id": 65, "name": "culture", "icon": Icons.public_outlined},
+    {"id": 66, "name": "digital_detox", "icon": Icons.lock_clock},
+    {"id": 67, "name": "privacy", "icon": Icons.no_photography_outlined},
+    {
+      "id": 68,
+      "name": "app_usage",
+      "icon": CupertinoIcons.device_phone_portrait,
+    },
+    {"id": 69, "name": "communication", "icon": CupertinoIcons.chat_bubble},
+    {
+      "id": 70,
+      "name": "networking",
+      "icon": Icons.wifi_tethering_outlined,
+    }, // NEW: Social / career networking
+    {
+      "id": 71,
+      "name": "video_call",
+      "icon": Icons.videocam_outlined,
+    }, // NEW: Habit of virtual connect
+    // 🟤 Motivation / Meta
+    {"id": 72, "name": "reward", "icon": Icons.star_outline},
+    {"id": 73, "name": "goal", "icon": Icons.flag_outlined},
+    {"id": 74, "name": "long_term_goal", "icon": Icons.track_changes_outlined},
+    {"id": 75, "name": "new_habit", "icon": Icons.rocket_launch_outlined},
+    {"id": 76, "name": "improve", "icon": Icons.upgrade_outlined},
+    {
+      "id": 77,
+      "name": "milestone",
+      "icon": Icons.emoji_events_outlined,
+    }, // NEW: Celebrating achievements
+    {
+      "id": 78,
+      "name": "consistency",
+      "icon": Icons.repeat_on_outlined,
+    }, // NEW: Build consistency
+  ];
 }

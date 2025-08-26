@@ -37,7 +37,7 @@ class HabitStartAtWidget extends StatelessWidget {
                   showHeader: true,
                   onDaySelected: (date, _) {
                     context.read<CreateBloc>().add(
-                      UpdateHabitStartAtEvent(date),
+                      UpdateHabitStartAtEvent(date.toString()),
                     );
                     Navigator.of(context).pop();
                   },

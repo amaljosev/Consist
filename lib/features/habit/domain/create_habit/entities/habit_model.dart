@@ -1,74 +1,95 @@
-import 'package:flutter/material.dart';
-
 class Habit {
   final String id;
   final String? habitName;
-
   final String? note;
-
-  final IconData? habitIcon;
-
+  final String? habitIconId;
   final String? habitType;
-
-  final DateTime? habitStartAt;
-
+  final String? habitStartAt;
   final String? habitTime;
-
   final String? habitEndAt;
-
   final String? habitRepeatValue;
-
-  final Object? repeatDays;
-
+  final String? repeatDays;
   final String? habitRemindTime;
-
-  final Color? habitColor;
+  final String? habitColorId;
 
   Habit({
     required this.id,
     this.habitName,
     this.note,
-    this.habitIcon,
+    this.habitIconId,
     this.habitType,
     this.habitStartAt,
     this.habitTime,
     this.habitEndAt,
     this.habitRepeatValue,
     this.repeatDays,
-
     this.habitRemindTime,
-    this.habitColor,
+    this.habitColorId,
   });
 
   Habit copyWith({
     String? id,
     String? habitName,
     String? note,
-    IconData? habitIcon,
+    String? habitIconId,
     String? habitType,
-    DateTime? habitStartAt,
+    String? habitStartAt,
     String? habitTime,
     String? habitEndAt,
     String? habitRepeatValue,
     String? habitRemindTime,
-    Color? habitColor,
-    int? repeatDays,
-    List? weekDays,
-    List? monthDays,
+    String? habitColorId,
+    String? repeatDays,
   }) {
     return Habit(
       id: id ?? this.id,
       habitName: habitName ?? this.habitName,
       note: note ?? this.note,
-      habitIcon: habitIcon ?? this.habitIcon,
+      habitIconId: habitIconId ?? this.habitIconId,
       habitType: habitType ?? this.habitType,
       habitStartAt: habitStartAt ?? this.habitStartAt,
       habitTime: habitTime ?? this.habitTime,
       habitEndAt: habitEndAt ?? this.habitEndAt,
       habitRemindTime: habitRemindTime ?? this.habitRemindTime,
-      habitColor: habitColor ?? this.habitColor,
+      habitColorId: habitColorId ?? this.habitColorId,
       habitRepeatValue: habitRepeatValue ?? this.habitRepeatValue,
       repeatDays: repeatDays ?? this.repeatDays,
+    );
+  }
+
+  // Convert Habit → Map
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'habitName': habitName,
+      'note': note,
+      'habitIconId': habitIconId,
+      'habitType': habitType,
+      'habitStartAt': habitStartAt,
+      'habitTime': habitTime,
+      'habitEndAt': habitEndAt,
+      'habitRepeatValue': habitRepeatValue,
+      'repeatDays': repeatDays,
+      'habitRemindTime': habitRemindTime,
+      'habitColorId': habitColorId,
+    };
+  }
+
+  // Convert Map → Habit
+  factory Habit.fromMap(Map<String, dynamic> map) {
+    return Habit(
+      id: map['id'],
+      habitName: map['habitName'],
+      note: map['note'],
+      habitIconId: map['habitIconId'],
+      habitType: map['habitType'],
+      habitStartAt: map['habitStartAt'],
+      habitTime: map['habitTime'],
+      habitEndAt: map['habitEndAt'],
+      habitRepeatValue: map['habitRepeatValue'],
+      repeatDays: map['repeatDays'],
+      habitRemindTime: map['habitRemindTime'],
+      habitColorId: map['habitColorId'],
     );
   }
 }

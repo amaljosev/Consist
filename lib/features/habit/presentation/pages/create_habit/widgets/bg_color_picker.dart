@@ -13,10 +13,11 @@ class HabitColor extends StatelessWidget {
       spacing: 10,
       runSpacing: 10,
       children: List.generate(AppColors.myColors.length, (index) {
-        final color = AppColors.myColors[index];
+        final colorData = AppColors.myColors[index];
+        final color=colorData['color'];
         return GestureDetector(
           onTap: () =>
-              context.read<CreateBloc>().add(UpdateHabitColorEvent(color)),
+              context.read<CreateBloc>().add(UpdateHabitColorEvent(colorData['id'].toString())),
           child: CircleAvatar(
             radius: 22,
             backgroundColor: Colors.white,
