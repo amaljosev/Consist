@@ -20,6 +20,7 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
     on<UpdateHabitColorEvent>(_onUpdateHabitColorId);
     on<UpdateHabitStartAtEvent>(_onUpdateHabitStartAt);
     on<UpdateHabitTimeEvent>(_onUpdateHabitTime);
+    on<UpdateHabitCategoryEvent>(_onUpdateHabitCategory);
     on<UpdateHabitEndAtEvent>(_onUpdateHabitEndAt);
     on<UpdateHabitRepeatValueEvent>(_onUpdateHabitRepeatValue);
     on<UpdateRepeatDaysEvent>(_onUpdateRepeatDays);
@@ -58,7 +59,6 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
     final currentState = state;
     if (currentState is CreateInitial) {
       if (event.habit != null) {
-      
         emit(CreateInitial(habit: event.habit!));
       } else {
         emit(
@@ -280,5 +280,19 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
     Emitter<CreateState> emit,
   ) async {
     emit(CreateInitial(habit: _createInitialHabit()));
+  }
+
+  FutureOr<void> _onUpdateHabitCategory(
+    UpdateHabitCategoryEvent event,
+    Emitter<CreateState> emit,
+  ) async {
+    final currentState = state;
+    if (currentState is CreateInitial) {
+      emit(
+        CreateInitial(
+          habit: currentState.habit.copyWith(category: event.category),
+        ),
+      );
+    }
   }
 }

@@ -210,12 +210,8 @@ class HabitsItems {
     {"id": 15, "name": "relaxation", "icon": Icons.spa_outlined},
     {"id": 16, "name": "recovery", "icon": Icons.healing_outlined},
     {"id": 17, "name": "heart_rate", "icon": Icons.monitor_heart_outlined},
-    {"id": 18, "name": "hiking", "icon": Icons.hiking}, // NEW: Outdoor activity
-    {
-      "id": 19,
-      "name": "balance",
-      "icon": Icons.balance_outlined,
-    }, // NEW: Posture / balance exercise
+    {"id": 18, "name": "hiking", "icon": Icons.hiking},
+    {"id": 19, "name": "balance", "icon": Icons.balance_outlined},
     // 🟢 Productivity & Learning
     {"id": 20, "name": "reading", "icon": Icons.menu_book_outlined},
     {"id": 21, "name": "daily_reading", "icon": Icons.auto_stories_outlined},
@@ -230,16 +226,8 @@ class HabitsItems {
     {"id": 30, "name": "time_management", "icon": CupertinoIcons.time},
     {"id": 31, "name": "writing", "icon": CupertinoIcons.doc_text},
     {"id": 32, "name": "daily_updates", "icon": CupertinoIcons.news},
-    {
-      "id": 33,
-      "name": "planning",
-      "icon": Icons.task_outlined,
-    }, // NEW: Daily planning habit
-    {
-      "id": 34,
-      "name": "tracking",
-      "icon": Icons.list_alt_outlined,
-    }, // NEW: To-do / habit tracker
+    {"id": 33, "name": "planning", "icon": Icons.task_outlined},
+    {"id": 34, "name": "tracking", "icon": Icons.list_alt_outlined},
     // 🟣 Mindfulness & Self Growth
     {"id": 35, "name": "task_completion", "icon": Icons.check_circle_outline},
     {"id": 36, "name": "mindfulness", "icon": Icons.psychology_outlined},
@@ -251,11 +239,7 @@ class HabitsItems {
     {"id": 42, "name": "self_love", "icon": Icons.favorite_border},
     {"id": 43, "name": "confidence", "icon": Icons.shield_outlined},
     {"id": 44, "name": "curiosity", "icon": Icons.catching_pokemon},
-    {
-      "id": 45,
-      "name": "calmness",
-      "icon": Icons.nightlight_outlined,
-    }, // NEW: Staying calm habit
+    {"id": 45, "name": "calmness", "icon": Icons.nightlight_outlined},
     // 🟠 Lifestyle & Routine
     {"id": 46, "name": "cleaning", "icon": Icons.cleaning_services_outlined},
     {"id": 47, "name": "gardening", "icon": Icons.local_florist_outlined},
@@ -270,16 +254,8 @@ class HabitsItems {
     {"id": 56, "name": "grooming", "icon": CupertinoIcons.scissors},
     {"id": 57, "name": "home_care", "icon": CupertinoIcons.house},
     {"id": 58, "name": "self_care", "icon": CupertinoIcons.wand_stars},
-    {
-      "id": 59,
-      "name": "cooking",
-      "icon": Icons.kitchen_outlined,
-    }, // NEW: Cooking habit
-    {
-      "id": 60,
-      "name": "organization",
-      "icon": Icons.folder_open_outlined,
-    }, // NEW: Organizing things
+    {"id": 59, "name": "cooking", "icon": Icons.kitchen_outlined},
+    {"id": 60, "name": "organization", "icon": Icons.folder_open_outlined},
     // 🟡 Social & Digital Habits
     {"id": 61, "name": "call", "icon": Icons.phone_outlined},
     {"id": 62, "name": "email", "icon": Icons.mail_outline},
@@ -294,11 +270,7 @@ class HabitsItems {
       "icon": CupertinoIcons.device_phone_portrait,
     },
     {"id": 69, "name": "communication", "icon": CupertinoIcons.chat_bubble},
-    {
-      "id": 70,
-      "name": "networking",
-      "icon": Icons.wifi_tethering_outlined,
-    }, // NEW: Social / career networking
+    {"id": 70, "name": "networking", "icon": Icons.wifi_tethering_outlined},
     {
       "id": 71,
       "name": "video_call",
@@ -310,15 +282,18 @@ class HabitsItems {
     {"id": 74, "name": "long_term_goal", "icon": Icons.track_changes_outlined},
     {"id": 75, "name": "new_habit", "icon": Icons.rocket_launch_outlined},
     {"id": 76, "name": "improve", "icon": Icons.upgrade_outlined},
-    {
-      "id": 77,
-      "name": "milestone",
-      "icon": Icons.emoji_events_outlined,
-    }, // NEW: Celebrating achievements
-    {
-      "id": 78,
-      "name": "consistency",
-      "icon": Icons.repeat_on_outlined,
-    }, // NEW: Build consistency
+    {"id": 77, "name": "milestone", "icon": Icons.emoji_events_outlined},
+    {"id": 78, "name": "consistency", "icon": Icons.repeat_on_outlined},
+  ];
+  static const List<Map<String, dynamic>> habitCategories = [
+    {"id": "0", "name": "All", "icon": Icons.list},
+    {"id": "1", "name": "Health", "icon": Icons.fitness_center},
+    {"id": "2", "name": "Productivity", "icon": Icons.work_outline},
+    {"id": "3", "name": "Mindfulness", "icon": Icons.self_improvement},
+    {"id": "4", "name": "Lifestyle", "icon": Icons.home_outlined},
+    {"id": "5", "name": "Social", "icon": Icons.groups_outlined},
+    {"id": "6", "name": "Motivation", "icon": Icons.star_outline},
+    {"id": "7", "name": "Quit", "icon": Icons.block},
+    {"id": "8", "name": "Tasks", "icon": Icons.check_circle_outline},
   ];
 }

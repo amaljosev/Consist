@@ -13,10 +13,27 @@ class HabitsLoading extends HabitsState {}
 
 class HabitsLoaded extends HabitsState {
   final List<Habit> habits;
-  const HabitsLoaded({required this.habits});
+  final List<Habit> filtered;
+  final String cat;
+  const HabitsLoaded({
+    required this.habits,
+    this.cat = '0',
+    required this.filtered,
+  });
+  HabitsLoaded copyWith({
+    List<Habit>? habits,
+    List<Habit>? filtered,
+    String? cat,
+  }) {
+    return HabitsLoaded(
+      habits: habits ?? this.habits,
+      filtered: filtered ?? this.filtered,
+      cat: cat ?? this.cat,
+    );
+  }
 
   @override
-  List<Object?> get props => [habits];
+  List<Object?> get props => [habits, cat, filtered];
 }
 
 class HabitsError extends HabitsState {
@@ -34,3 +51,7 @@ class BottomNavScreenChangeState extends HabitsState {
   @override
   List<Object?> get props => [index];
 }
+
+class HabitCompleteSuccess extends HabitsState {}
+
+class HabitCompleteError extends HabitsState {}

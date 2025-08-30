@@ -1,4 +1,5 @@
 import 'package:consist/features/habit/data/datasources/habit_local_datasource.dart';
+import 'package:consist/features/habit/domain/create_habit/entities/analytics_models.dart';
 import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
 import 'package:consist/features/habit/domain/create_habit/repositories/habit_repository.dart';
 
@@ -30,5 +31,23 @@ class HabitRepositoryImpl implements HabitRepository {
   @override
   Future<int> deleteHabit(String id) async {
     return await db.deleteHabit(id);
+  }
+
+  @override
+  Future<void> markHabitComplete({
+    required String habitId,
+    required String completionDate,
+    required HabitAnalytics analytics,
+  }) async {
+    await db.markHabitComplete(
+      habitId: habitId,
+      completionDate: completionDate,
+      analytics: analytics,
+    );
+  }
+
+  @override
+  Future<List<Habit>> getHabitsByCategory(String category) async {
+    return await db.getHabitsByCategory(category);
   }
 }

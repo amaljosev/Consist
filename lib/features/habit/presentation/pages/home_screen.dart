@@ -3,7 +3,7 @@ import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_blo
 import 'package:consist/features/habit/presentation/pages/library/library_screen.dart';
 import 'package:consist/features/habit/presentation/pages/me/me_screen.dart';
 import 'package:consist/features/habit/presentation/pages/progress/progress_screen.dart';
-import 'package:consist/features/habit/presentation/pages/routine/routine_screen.dart';
+import 'package:consist/features/habit/presentation/pages/goals/goals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = [
-    RoutineScreen(),
+    GoalsScreen(),
     LibraryScreen(),
     ProgressScreen(),
     MeScreen(),
@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(MyFlutterApp.tasks),
-                label: 'Routines',
+                label: 'Goals',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.library_books_outlined),

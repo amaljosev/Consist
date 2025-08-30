@@ -3,6 +3,7 @@ class Habit {
   final String? habitName;
   final String? note;
   final String? habitIconId;
+  final String? category;
   final String? habitType;
   final String? habitStartAt;
   final String? habitTime;
@@ -11,11 +12,16 @@ class Habit {
   final String? repeatDays;
   final String? habitRemindTime;
   final String? habitColorId;
+  final String? isCompleteToday;
+
+  
+
 
   Habit({
     required this.id,
     this.habitName,
     this.note,
+    this.category,
     this.habitIconId,
     this.habitType,
     this.habitStartAt,
@@ -25,12 +31,14 @@ class Habit {
     this.repeatDays,
     this.habitRemindTime,
     this.habitColorId,
+    this.isCompleteToday
   });
 
   Habit copyWith({
     String? id,
     String? habitName,
     String? note,
+    String? category,
     String? habitIconId,
     String? habitType,
     String? habitStartAt,
@@ -40,11 +48,13 @@ class Habit {
     String? habitRemindTime,
     String? habitColorId,
     String? repeatDays,
+    String? isCompleteToday
   }) {
     return Habit(
       id: id ?? this.id,
       habitName: habitName ?? this.habitName,
       note: note ?? this.note,
+      category: category?? this.category,
       habitIconId: habitIconId ?? this.habitIconId,
       habitType: habitType ?? this.habitType,
       habitStartAt: habitStartAt ?? this.habitStartAt,
@@ -54,6 +64,8 @@ class Habit {
       habitColorId: habitColorId ?? this.habitColorId,
       habitRepeatValue: habitRepeatValue ?? this.habitRepeatValue,
       repeatDays: repeatDays ?? this.repeatDays,
+      isCompleteToday: isCompleteToday??this.isCompleteToday
+  
     );
   }
 
@@ -63,6 +75,7 @@ class Habit {
       'id': id,
       'habitName': habitName,
       'note': note,
+      'category':category,
       'habitIconId': habitIconId,
       'habitType': habitType,
       'habitStartAt': habitStartAt,
@@ -72,6 +85,7 @@ class Habit {
       'repeatDays': repeatDays,
       'habitRemindTime': habitRemindTime,
       'habitColorId': habitColorId,
+      'isCompleteToday':isCompleteToday,
     };
   }
 
@@ -81,6 +95,7 @@ class Habit {
       id: map['id'],
       habitName: map['habitName'],
       note: map['note'],
+      category: map['category'],
       habitIconId: map['habitIconId'],
       habitType: map['habitType'],
       habitStartAt: map['habitStartAt'],
@@ -90,6 +105,7 @@ class Habit {
       repeatDays: map['repeatDays'],
       habitRemindTime: map['habitRemindTime'],
       habitColorId: map['habitColorId'],
+      isCompleteToday: map['isCompleteToday']
     );
   }
 }

@@ -17,7 +17,7 @@ class HabitTypeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HabitCreationTile(
-      icon: Icons.category_outlined,
+      icon: Icons.list,
       title: 'Habit Type',
       trailing: habitType,
       onTap: () => showModalBottomSheet(
@@ -42,11 +42,10 @@ class HabitTypeWidget extends StatelessWidget {
                     ),
                     trailing: Icon(
                       item == HabitType.develop
-                          ? Icons.flag
+                          ? Icons.flag_outlined
                           : item == HabitType.quit
                           ? Icons.dangerous_outlined
                           : Icons.add_task_outlined,
-                      color: Theme.of(context).primaryColor,
                     ),
                     onTap: () {
                       context.read<CreateBloc>().add(

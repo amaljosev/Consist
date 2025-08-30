@@ -36,6 +36,15 @@ class UpdateHabitNoteEvent extends CreateEvent {
   List<Object?> get props => [note];
 }
 
+class UpdateHabitCategoryEvent extends CreateEvent {
+  final String category;
+
+  const UpdateHabitCategoryEvent(this.category);
+
+  @override
+  List<Object?> get props => [category];
+}
+
 class UpdateHabitIconEvent extends CreateEvent {
   final String icon;
 

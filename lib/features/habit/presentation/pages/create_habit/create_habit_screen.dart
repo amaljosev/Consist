@@ -9,6 +9,7 @@ import 'package:consist/features/habit/presentation/pages/create_habit/bloc/crea
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/add_note_widget.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/bg_color_picker.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/duration_widget.dart';
+import 'package:consist/features/habit/presentation/pages/create_habit/widgets/habit_category_widget.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/habit_icon.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/habit_remainder.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/habit_repeat.dart';
@@ -167,6 +168,14 @@ class _CreateScreenState extends State<CreateScreen> {
                                   height: 0,
                                   color: isDark ? null : Colors.black12,
                                 ),
+                                HabitCategoryWidget(
+                                  habitCategory: habit.category,
+                                  isDark: isDark,
+                                ),
+                                Divider(
+                                  height: 0,
+                                  color: isDark ? null : Colors.black12,
+                                ),
 
                                 HabitStartAtWidget(
                                   habitStartAt: AppConverters.stringToDateTime(
@@ -238,6 +247,7 @@ class _CreateScreenState extends State<CreateScreen> {
       habitColorId: habit.habitColorId,
       habitEndAt: habit.habitEndAt ?? 'Off',
       habitIconId: habit.habitIconId,
+      category: habit.category,
       habitRemindTime: habit.habitRemindTime ?? 'Off',
       habitRepeatValue: habit.habitRepeatValue ?? 'Daily',
       habitStartAt: habit.habitStartAt ?? 'Today',
@@ -245,6 +255,7 @@ class _CreateScreenState extends State<CreateScreen> {
       habitType: habit.habitType,
       note: noteController.text,
       repeatDays: habit.repeatDays,
+      isCompleteToday: habit.isCompleteToday,
     );
     if (isUpdate) {
       context.read<HabitsBloc>().add(UpdateHabitEvent(newHabit));

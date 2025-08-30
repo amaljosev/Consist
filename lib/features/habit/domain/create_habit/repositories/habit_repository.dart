@@ -1,3 +1,4 @@
+import 'package:consist/features/habit/domain/create_habit/entities/analytics_models.dart';
 import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
 
 abstract class HabitRepository {
@@ -6,4 +7,10 @@ abstract class HabitRepository {
   Future<Habit?> getHabitById(String id);
   Future<int> updateHabit(Habit habit);
   Future<int> deleteHabit(String id);
+   Future<void> markHabitComplete({
+    required String habitId,
+    required String completionDate,
+    required HabitAnalytics analytics,
+  });
+  Future<List<Habit>> getHabitsByCategory(String category);
 }

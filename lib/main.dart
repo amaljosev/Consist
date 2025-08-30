@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:consist/core/app_theme.dart';
 import 'package:consist/features/habit/data/datasources/habit_local_datasource.dart';
 import 'package:consist/features/habit/data/repositories/habit_repository_impl.dart';
@@ -7,9 +9,13 @@ import 'package:consist/features/habit/presentation/pages/create_habit/bloc/crea
 import 'package:consist/features/habit/presentation/pages/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
-void main() {
+
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+// await resetDatabase();
 
   // Initialize datasource
   final habitLocalDataSource = HabitDatabase.instance;
@@ -26,6 +32,7 @@ class MyApp extends StatelessWidget {
   final HabitRepository habitRepo;
   @override
   Widget build(BuildContext context) {
+    
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -42,3 +49,14 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+Future<void> resetDatabase() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'habits.db');
+
+    try {
+      await deleteDatabase(path);
+      log("✅ Database deleted successfully");
+    } catch (e) {
+      log("❌ Error deleting database: $e");
+    }
+  }
