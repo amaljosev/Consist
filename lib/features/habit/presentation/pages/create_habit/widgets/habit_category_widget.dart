@@ -32,10 +32,10 @@ class HabitCategoryWidget extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: List.generate(HabitsItems.habitCategories.length, (
+                  children: List.generate(HabitsItems.habitCategories.length-1, (
                     index,
                   ) {
-                    final item = HabitsItems.habitCategories[index];
+                    final item = HabitsItems.habitCategories[index+1];
                     final name = item['name'];
                     return ListTile(
                       trailing: Icon(item['icon']),

@@ -1,4 +1,3 @@
-import 'package:consist/core/constants/habits_items.dart';
 import 'package:consist/core/utils/common_functions.dart';
 import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
 import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_bloc.dart';
@@ -59,8 +58,10 @@ Future<dynamic> habitDetailSheet({
                     IconButton(
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) =>
-                              CreateScreen(habit: habit, type: HabitType.quit),
+                          builder: (context) => CreateScreen(
+                            habit: habit,
+                            category: habit.category!,
+                          ),
                         ),
                       ),
                       icon: Icon(Icons.edit),

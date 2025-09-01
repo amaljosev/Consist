@@ -20,10 +20,9 @@ class CommonFunctions {
 
   static IconData? getIconById(String id) {
     try {
-      int iconId = int.parse(id);
       final iconData =
-          HabitsItems.iconList.firstWhere(
-                (item) => item["id"] == iconId,
+          HabitsItems.habitList.firstWhere(
+                (item) => item["id"] == id,
               )["icon"]
               as IconData;
 

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:consist/core/constants/habits_items.dart';
 import 'package:consist/core/utils/common_functions.dart';
 import 'package:consist/core/utils/converters.dart';
 import 'package:consist/core/widgets/loading_widget.dart';
@@ -15,15 +14,22 @@ import 'package:consist/features/habit/presentation/pages/create_habit/widgets/h
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/habit_repeat.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/habit_start_at_widget.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/widgets/habit_time_widget.dart';
-import 'package:consist/features/habit/presentation/pages/create_habit/widgets/habit_type_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateScreen extends StatefulWidget {
-  const CreateScreen({super.key, required this.type, required this.habit});
-  final HabitType type;
+  const CreateScreen({
+    super.key,
+    required this.category,
+    required this.habit,
+    this.name,
+    this.icon,
+  });
+  final String category;
+  final String? name;
   final Habit? habit;
+  final String? icon;
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -36,8 +42,12 @@ class _CreateScreenState extends State<CreateScreen> {
   @override
   void initState() {
     context.read<CreateBloc>().add(
-      InitializeCreateEvent(widget.type, widget.habit),
+      InitializeCreateEvent(widget.category, widget.habit, widget.icon),
     );
+    if (widget.name != null) {
+      nameController.text = widget.name ?? '';
+    }
+
     if (widget.habit != null) {
       nameController.text = widget.habit!.habitName ?? '';
       noteController.text = widget.habit!.note ?? '';
@@ -159,15 +169,6 @@ class _CreateScreenState extends State<CreateScreen> {
                             padding: const EdgeInsets.all(15),
                             child: Column(
                               children: [
-                                HabitTypeWidget(
-                                  habitType:
-                                      habit.habitType ?? widget.type.name,
-                                  isDark: isDark,
-                                ),
-                                Divider(
-                                  height: 0,
-                                  color: isDark ? null : Colors.black12,
-                                ),
                                 HabitCategoryWidget(
                                   habitCategory: habit.category,
                                   isDark: isDark,
@@ -194,7 +195,7 @@ class _CreateScreenState extends State<CreateScreen> {
                                   color: isDark ? null : Colors.black12,
                                 ),
 
-                                if (habit.habitType != 'task')
+                                if (habit.category != '3')
                                   HabitRepeatWidget(
                                     habitRepeat: habit.habitRepeatValue,
 
@@ -252,7 +253,6 @@ class _CreateScreenState extends State<CreateScreen> {
       habitRepeatValue: habit.habitRepeatValue ?? 'Daily',
       habitStartAt: habit.habitStartAt ?? 'Today',
       habitTime: habit.habitTime ?? 'Anytime',
-      habitType: habit.habitType,
       note: noteController.text,
       repeatDays: habit.repeatDays,
       isCompleteToday: habit.isCompleteToday,
@@ -263,6 +263,9 @@ class _CreateScreenState extends State<CreateScreen> {
       context.read<HabitsBloc>().add(AddHabitEvent(newHabit));
     }
     Navigator.pop(context);
-    Navigator.pop(context);
+    if (widget.icon == null && widget.name == null) {
+      Navigator.pop(context);
+    }
+    context.read<HabitsBloc>().add(BottomNavScreenChangeEvent(index: 0));
   }
 }

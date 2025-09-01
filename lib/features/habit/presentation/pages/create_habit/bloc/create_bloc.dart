@@ -16,7 +16,7 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
     on<UpdateHabitNameEvent>(_onUpdateHabitName);
     on<UpdateHabitNoteEvent>(_onUpdateHabitNote);
     on<UpdateHabitIconEvent>(_onUpdateHabitIconId);
-    on<UpdateHabitTypeEvent>(_onUpdateHabitType);
+    // on<UpdateHabitTypeEvent>(_onUpdateHabitType);
     on<UpdateHabitColorEvent>(_onUpdateHabitColorId);
     on<UpdateHabitStartAtEvent>(_onUpdateHabitStartAt);
     on<UpdateHabitTimeEvent>(_onUpdateHabitTime);
@@ -36,9 +36,8 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
       note: null,
       habitIconId: CommonFunctions.getRandomNumber(
         0,
-        HabitsItems.iconList.length - 1,
+        HabitsItems.habitList.length - 1,
       ).toString(),
-      habitType: null,
       habitStartAt: null,
       habitTime: null,
       habitEndAt: null,
@@ -64,10 +63,10 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
         emit(
           CreateInitial(
             habit: currentState.habit.copyWith(
-              habitType: event.type.name,
-              habitIconId: CommonFunctions.getRandomNumber(
+              category: event.category,
+              habitIconId:event.iconId?? CommonFunctions.getRandomNumber(
                 0,
-                HabitsItems.iconList.length - 1,
+                HabitsItems.habitList.length - 1,
               ).toString(),
               habitColorId: CommonFunctions.getRandomNumber(
                 0,
@@ -118,19 +117,19 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
     }
   }
 
-  Future<void> _onUpdateHabitType(
-    UpdateHabitTypeEvent event,
-    Emitter<CreateState> emit,
-  ) async {
-    final currentState = state;
-    if (currentState is CreateInitial) {
-      emit(
-        CreateInitial(
-          habit: currentState.habit.copyWith(habitType: event.type),
-        ),
-      );
-    }
-  }
+  // Future<void> _onUpdateHabitType(
+  //   UpdateHabitTypeEvent event,
+  //   Emitter<CreateState> emit,
+  // ) async {
+  //   final currentState = state;
+  //   if (currentState is CreateInitial) {
+  //     emit(
+  //       CreateInitial(
+  //         habit: currentState.habit.copyWith(habitType: event.type),
+  //       ),
+  //     );
+  //   }
+  // }
 
   Future<void> _onUpdateHabitColorId(
     UpdateHabitColorEvent event,
@@ -251,10 +250,7 @@ class CreateBloc extends Bloc<CreateEvent, CreateState> {
         return;
       }
 
-      if (habit.habitType == null) {
-        emit(CreateValidationError('habitType', 'Please select a habit type'));
-        return;
-      }
+   
 
       emit(CreateLoading());
 

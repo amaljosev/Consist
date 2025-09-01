@@ -4,7 +4,6 @@ class Habit {
   final String? note;
   final String? habitIconId;
   final String? category;
-  final String? habitType;
   final String? habitStartAt;
   final String? habitTime;
   final String? habitEndAt;
@@ -23,7 +22,6 @@ class Habit {
     this.note,
     this.category,
     this.habitIconId,
-    this.habitType,
     this.habitStartAt,
     this.habitTime,
     this.habitEndAt,
@@ -40,7 +38,6 @@ class Habit {
     String? note,
     String? category,
     String? habitIconId,
-    String? habitType,
     String? habitStartAt,
     String? habitTime,
     String? habitEndAt,
@@ -56,7 +53,6 @@ class Habit {
       note: note ?? this.note,
       category: category?? this.category,
       habitIconId: habitIconId ?? this.habitIconId,
-      habitType: habitType ?? this.habitType,
       habitStartAt: habitStartAt ?? this.habitStartAt,
       habitTime: habitTime ?? this.habitTime,
       habitEndAt: habitEndAt ?? this.habitEndAt,
@@ -77,7 +73,6 @@ class Habit {
       'note': note,
       'category':category,
       'habitIconId': habitIconId,
-      'habitType': habitType,
       'habitStartAt': habitStartAt,
       'habitTime': habitTime,
       'habitEndAt': habitEndAt,
@@ -97,7 +92,6 @@ class Habit {
       note: map['note'],
       category: map['category'],
       habitIconId: map['habitIconId'],
-      habitType: map['habitType'],
       habitStartAt: map['habitStartAt'],
       habitTime: map['habitTime'],
       habitEndAt: map['habitEndAt'],

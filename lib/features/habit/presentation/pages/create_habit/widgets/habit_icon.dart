@@ -14,7 +14,6 @@ class HabitIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       onPressed: () {
-       
         showModalBottomSheet(
           context: context,
           showDragHandle: true,
@@ -29,11 +28,11 @@ class HabitIcon extends StatelessWidget {
                 child: Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: List.generate(HabitsItems.iconList.length, (
+                  children: List.generate(HabitsItems.habitList.length, (
                     index,
                   ) {
-                    final iconData = HabitsItems.iconList[index];
-                    final icon=iconData['icon'];
+                    final iconData = HabitsItems.habitList[index];
+                    final icon = iconData['icon'];
                     return GestureDetector(
                       onTap: () {
                         context.read<CreateBloc>().add(
@@ -59,7 +58,7 @@ class HabitIcon extends StatelessWidget {
         );
       },
       icon: Icon(
-        CommonFunctions.getIconById(icon??'0'),
+        CommonFunctions.getIconById(icon ?? '0') ?? Icons.favorite_border,
         color: Theme.of(context).primaryColor,
         size: MediaQuery.of(context).size.width * 0.2,
       ),
