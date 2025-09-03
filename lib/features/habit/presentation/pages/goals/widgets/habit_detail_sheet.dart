@@ -3,6 +3,7 @@ import 'package:consist/features/habit/domain/create_habit/entities/habit_model.
 import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_bloc.dart';
 import 'package:consist/features/habit/presentation/dialogs/delete_habit_dialog.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/create_habit_screen.dart';
+import 'package:consist/features/habit/presentation/pages/habit_analytics/habit_analytics_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,7 +55,16 @@ Future<dynamic> habitDetailSheet({
                       },
                       icon: Icon(CupertinoIcons.delete),
                     ),
-                    IconButton(onPressed: () {}, icon: Icon(Icons.bar_chart)),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              HabitAnalyticsScreen(habitId: habit.id),
+                        ),
+                      ),
+
+                      icon: Icon(Icons.bar_chart),
+                    ),
                     IconButton(
                       onPressed: () => Navigator.of(context).push(
                         MaterialPageRoute(

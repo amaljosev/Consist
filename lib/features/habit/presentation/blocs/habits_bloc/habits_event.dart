@@ -59,3 +59,10 @@ class FetchHabitsByCategory extends HabitsEvent {
   @override
   List<Object?> get props => [category];
 }
+class FetchHabitAnalyticsEvent extends HabitsEvent {
+  final String habitId;
+  const FetchHabitAnalyticsEvent(this.habitId);
+
+  @override
+  List<Object?> get props => [habitId];
+}

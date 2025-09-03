@@ -1,3 +1,4 @@
+import 'package:consist/features/habit/domain/create_habit/entities/analytics_models.dart';
 import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
 import 'package:consist/features/habit/domain/create_habit/repositories/habit_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -101,6 +102,17 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
             habits: allHabits,
           ),
         );
+      }
+    });
+    on<FetchHabitAnalyticsEvent>((event, emit) async {
+      emit(HabitAnalyticsLoading());
+      try {
+        // Fetch analytics by habitId from repository
+        final analytics = await habitRepository.getHabitAnalytics(event.habitId);
+
+        emit(HabitAnalyticsLoaded(analytics: analytics));
+      } catch (e) {
+        emit(HabitAnalyticsError(e.toString()));
       }
     });
   }

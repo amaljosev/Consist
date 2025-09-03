@@ -55,3 +55,20 @@ class BottomNavScreenChangeState extends HabitsState {
 class HabitCompleteSuccess extends HabitsState {}
 
 class HabitCompleteError extends HabitsState {}
+class HabitAnalyticsLoading extends HabitsState {}
+
+class HabitAnalyticsLoaded extends HabitsState {
+  final HabitAnalytics? analytics;
+  const HabitAnalyticsLoaded({required this.analytics});
+
+  @override
+  List<Object?> get props => [analytics];
+}
+
+class HabitAnalyticsError extends HabitsState {
+  final String message;
+  const HabitAnalyticsError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

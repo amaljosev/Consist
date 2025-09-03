@@ -7,12 +7,13 @@ abstract class HabitRepository {
   Future<Habit?> getHabitById(String id);
   Future<int> updateHabit(Habit habit);
   Future<int> deleteHabit(String id);
-   Future<void> markHabitComplete({
+  Future<void> markHabitComplete({
     required String habitId,
     required String completionDate,
     required HabitAnalytics analytics,
   });
   Future<List<Habit>> getHabitsByCategory(String category);
-   Future<HabitAnalytics?> getHabitAnalytics(String id);
-   Future<HabitAnalytics?> updateHabitAnalytics(String id);
+  Future<HabitAnalytics?> getHabitAnalytics(String id);
+  Future<HabitAnalytics?> updateHabitAnalytics(String id);
 }
+
