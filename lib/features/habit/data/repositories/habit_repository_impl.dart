@@ -50,4 +50,14 @@ class HabitRepositoryImpl implements HabitRepository {
   Future<List<Habit>> getHabitsByCategory(String category) async {
     return await db.getHabitsByCategory(category);
   }
+  
+  @override
+ Future<HabitAnalytics?> getHabitAnalytics(String id) async{
+    return await db.getHabitAnalytics(id);
+  }
+  
+  @override
+  Future<HabitAnalytics?> updateHabitAnalytics(String id) async{
+    return await db.calculateUpdatedAnalytics(id);
+  }
 }

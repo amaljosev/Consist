@@ -1,4 +1,3 @@
-import 'package:consist/features/habit/domain/create_habit/entities/analytics_models.dart';
 import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
 import 'package:consist/features/habit/domain/create_habit/repositories/habit_repository.dart';
 import 'package:equatable/equatable.dart';
@@ -67,11 +66,14 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
       try {
         final todayStr =
             "${DateTime.now().day}:${DateTime.now().month}:${DateTime.now().year}";
+        final analytics = await habitRepository.updateHabitAnalytics(
+          event.habitId,
+        );
 
         await habitRepository.markHabitComplete(
           habitId: event.habitId,
           completionDate: todayStr,
-          analytics: event.analytics,
+          analytics: analytics!,
         );
 
         emit(HabitCompleteSuccess());

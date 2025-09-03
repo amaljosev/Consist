@@ -244,7 +244,7 @@ class _CreateScreenState extends State<CreateScreen> {
   void _createHabit(BuildContext context, Habit habit, bool isUpdate) {
     final newHabit = Habit(
       id: isUpdate ? habit.id : DateTime.now().toString(),
-      habitName: nameController.text,
+      habitName: nameController.text.trim(),
       habitColorId: habit.habitColorId,
       habitEndAt: habit.habitEndAt ?? 'Off',
       habitIconId: habit.habitIconId,
@@ -253,7 +253,7 @@ class _CreateScreenState extends State<CreateScreen> {
       habitRepeatValue: habit.habitRepeatValue ?? 'Daily',
       habitStartAt: habit.habitStartAt ?? 'Today',
       habitTime: habit.habitTime ?? 'Anytime',
-      note: noteController.text,
+      note: noteController.text.trim(),
       repeatDays: habit.repeatDays,
       isCompleteToday: habit.isCompleteToday,
     );

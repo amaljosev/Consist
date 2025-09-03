@@ -42,17 +42,14 @@ class DeleteHabitEvent extends HabitsEvent {
   @override
   List<Object?> get props => [id];
 }
+
 class MarkHabitCompleteEvent extends HabitsEvent {
   final String habitId;
-  final HabitAnalytics analytics;
 
-  const MarkHabitCompleteEvent({
-    required this.habitId,
-    required this.analytics,
-  });
+  const MarkHabitCompleteEvent({required this.habitId});
 
   @override
-  List<Object?> get props => [habitId, analytics];
+  List<Object?> get props => [habitId];
 }
 
 class FetchHabitsByCategory extends HabitsEvent {

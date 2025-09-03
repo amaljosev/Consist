@@ -13,4 +13,6 @@ abstract class HabitRepository {
     required HabitAnalytics analytics,
   });
   Future<List<Habit>> getHabitsByCategory(String category);
+   Future<HabitAnalytics?> getHabitAnalytics(String id);
+   Future<HabitAnalytics?> updateHabitAnalytics(String id);
 }

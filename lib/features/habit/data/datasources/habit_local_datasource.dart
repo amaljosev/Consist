@@ -49,6 +49,7 @@ class HabitDatabase {
       await db.execute('''
         CREATE TABLE habit_analytics (
           habitId TEXT PRIMARY KEY,
+          lastDay TEXT,
           currentStreak TEXT,
           bestStreak TEXT,
           mostActiveDays TEXT,
@@ -57,6 +58,7 @@ class HabitDatabase {
           monthlyCompletionRate TEXT,
           yearlyCompletionRate TEXT,
           starsEarned TEXT,
+          achievements TEXT,
           FOREIGN KEY (habitId) REFERENCES habits(id) ON DELETE CASCADE
         )
       ''');
@@ -69,21 +71,37 @@ class HabitDatabase {
   Future<int> createHabit(Habit habit) async {
     try {
       final db = await instance.database;
-      return await db.insert('habits', {
-        'id': habit.id,
-        'habitName': habit.habitName,
-        'note': habit.note,
-        'habitIconId': habit.habitIconId,
-        'category': habit.category,
-        'habitStartAt': habit.habitStartAt,
-        'habitTime': habit.habitTime,
-        'habitEndAt': habit.habitEndAt,
-        'habitRepeatValue': habit.habitRepeatValue,
-        'repeatDays': habit.repeatDays,
-        'habitRemindTime': habit.habitRemindTime,
-        'habitColorId': habit.habitColorId,
-        'isCompleteToday': habit.isCompleteToday,
-      });
+      return await db
+          .insert('habits', {
+            'id': habit.id,
+            'habitName': habit.habitName,
+            'note': habit.note,
+            'habitIconId': habit.habitIconId,
+            'category': habit.category,
+            'habitStartAt': habit.habitStartAt,
+            'habitTime': habit.habitTime,
+            'habitEndAt': habit.habitEndAt,
+            'habitRepeatValue': habit.habitRepeatValue,
+            'repeatDays': habit.repeatDays,
+            'habitRemindTime': habit.habitRemindTime,
+            'habitColorId': habit.habitColorId,
+            'isCompleteToday': habit.isCompleteToday,
+          })
+          .then(
+            (value) async => await db.insert('habit_analytics', {
+              'habitId': habit.id,
+              'currentStreak': '0',
+              'bestStreak': '0',
+              'mostActiveDays': jsonEncode(<int>[]),
+              'completionRate': '0.0',
+              'weeklyCompletionRate': '0.0',
+              'monthlyCompletionRate': '0.0',
+              'yearlyCompletionRate': '0.0',
+              'starsEarned': '0',
+              'lastDay': '',
+              'achievements': jsonEncode(<int>[]),
+            }, conflictAlgorithm: ConflictAlgorithm.replace),
+          );
     } catch (e) {
       log("Error creating habit: $e");
       return -1;
@@ -95,6 +113,7 @@ class HabitDatabase {
     try {
       final db = await instance.database;
       final result = await db.query('habits');
+
       return result
           .map(
             (map) => Habit(
@@ -200,7 +219,6 @@ class HabitDatabase {
     }
   }
 
-  // ✅ Habit completion
   Future<void> markHabitComplete({
     required String habitId,
     required String completionDate,
@@ -217,18 +235,24 @@ class HabitDatabase {
         whereArgs: [habitId],
       );
 
-      // 2️⃣ Insert or replace analytics row
-      await db.insert('habit_analytics', {
-        'habitId': habitId,
-        'currentStreak': analytics.currentStreak.toString(),
-        'bestStreak': analytics.bestStreak.toString(),
-        'mostActiveDays': jsonEncode(analytics.mostActiveDays),
-        'completionRate': analytics.completionRate.toString(),
-        'weeklyCompletionRate': analytics.weeklyCompletionRate.toString(),
-        'monthlyCompletionRate': analytics.monthlyCompletionRate.toString(),
-        'yearlyCompletionRate': analytics.yearlyCompletionRate.toString(),
-        'starsEarned': analytics.starsEarned.toString(),
-      }, conflictAlgorithm: ConflictAlgorithm.replace);
+      // 2️⃣ Update habit analytics
+      await db.update(
+        'habit_analytics',
+        {
+          'currentStreak': analytics.currentStreak.toString(),
+          'bestStreak': analytics.bestStreak.toString(),
+          'mostActiveDays': jsonEncode(analytics.mostActiveDays),
+          'completionRate': analytics.completionRate.toString(),
+          'weeklyCompletionRate': analytics.weeklyCompletionRate.toString(),
+          'monthlyCompletionRate': analytics.monthlyCompletionRate.toString(),
+          'yearlyCompletionRate': analytics.yearlyCompletionRate.toString(),
+          'starsEarned': analytics.starsEarned.toString(),
+          'lastDay': analytics.lastDay,
+          'achievements': jsonEncode(analytics.achievements),
+        },
+        where: 'habitId = ?',
+        whereArgs: [habitId],
+      );
     } catch (e) {
       log("Error marking habit complete: $e");
     }
@@ -245,11 +269,11 @@ class HabitDatabase {
         whereArgs: [category],
       );
 
-      if (result.isEmpty) return []; 
+      if (result.isEmpty) return [];
 
       return result.map((map) {
         return Habit(
-          id: map['id']?.toString() ?? "", // ✅ safe cast
+          id: map['id']?.toString() ?? "",
           habitName: map['habitName'] as String?,
           note: map['note'] as String?,
           habitIconId: map['habitIconId'] as String?,
@@ -267,6 +291,105 @@ class HabitDatabase {
     } catch (e, st) {
       log("Error getting habits by category: $e\n$st");
       return [];
+    }
+  }
+
+  // ✅ Get habit analytics
+  Future<HabitAnalytics?> getHabitAnalytics(String habitId) async {
+    try {
+      final db = await instance.database;
+
+      final maps = await db.query(
+        'habit_analytics',
+        where: 'habitId = ?',
+        whereArgs: [habitId],
+      );
+
+      if (maps.isNotEmpty) {
+        return HabitAnalytics.fromMap(maps.first);
+      }
+      return null;
+    } catch (e) {
+      log("Error fetching habit analytics: $e");
+      return null;
+    }
+  }
+
+  Future<HabitAnalytics?> calculateUpdatedAnalytics(String habitId) async {
+    try {
+      final db = await instance.database;
+
+      final maps = await db.query(
+        'habit_analytics',
+        where: 'habitId = ?',
+        whereArgs: [habitId],
+      );
+
+      if (maps.isEmpty) return null;
+
+      final current = HabitAnalytics.fromMap(maps.first);
+
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+
+      DateTime? lastDay;
+      if (current.lastDay.isNotEmpty) {
+        lastDay = DateTime.tryParse(current.lastDay);
+      }
+
+      int currentStreak = current.currentStreak;
+      int bestStreak = current.bestStreak;
+
+      // 🔹 Streak logic
+      if (lastDay == null) {
+        // First ever completion
+        currentStreak = 1;
+      } else {
+        final diff = today
+            .difference(DateTime(lastDay.year, lastDay.month, lastDay.day))
+            .inDays;
+
+        if (diff == 0) {
+          // Already completed today → no update
+          return current;
+        } else if (diff == 1) {
+          currentStreak += 1;
+        } else {
+          currentStreak = 1; // streak broken, start over
+        }
+      }
+
+      if (currentStreak > bestStreak) {
+        bestStreak = currentStreak;
+      }
+
+      // 🔹 Most active days (stored as list<int> or map)
+      List<int> mostActiveDays = current.mostActiveDays;
+      mostActiveDays.add(today.weekday);
+
+      // 🔹 Completion rate (simplistic increment)
+      // For more accuracy, log all completions and calculate on demand.
+      double completionRate = (current.completionRate) + 1;
+
+      // 🔹 Weekly/Monthly/Yearly (if you track counts separately)
+      double weekly = (current.weeklyCompletionRate) + 1;
+      double monthly = (current.monthlyCompletionRate) + 1;
+      double yearly = (current.yearlyCompletionRate) + 1;
+
+      return current.copyWith(
+        lastDay: today.toIso8601String(),
+        currentStreak: currentStreak,
+        bestStreak: bestStreak,
+        mostActiveDays: mostActiveDays,
+        completionRate: completionRate,
+        weeklyCompletionRate: weekly,
+        monthlyCompletionRate: monthly,
+        yearlyCompletionRate: yearly,
+        // optionally stars/achievements logic here
+      );
+    } catch (e) {
+      log("Error calculating updated analytics: $e");
+      return null;
     }
   }
 
