@@ -18,7 +18,6 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
     context.read<HabitsBloc>().add(FetchHabitAnalyticsEvent(widget.habitId));
   }
 
-  // Count frequency of days (1=Mon ... 7=Sun)
   Map<int, int> _countDaysFrequency(List<int> days) {
     final countMap = <int, int>{};
     for (var d = 1; d <= 7; d++) {
@@ -74,33 +73,6 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Last Day Done Section
-                  _buildSectionHeader("📅 Last Habit Done"),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 20,
-                    ),
-                    decoration: _modernCardDecoration(),
-                    child: Text(
-                      analytics.lastDay.isNotEmpty
-                          ? analytics.lastDay
-                          : 'No records yet',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Summary Stats Cards
-                  _buildSectionHeader("🔥 Key Stats"),
-                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -135,76 +107,49 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
                   const SizedBox(height: 30),
 
                   // Completion Rates Chart
-                  _buildSectionHeader("📊 Completion Rates"),
+                  // Replace the entire "Completion Rates Chart" section with this:
+
+                  // Completion Rates Progress Indicators
+                  _buildSectionHeader("Completion Rates"),
                   const SizedBox(height: 16),
                   Container(
-                    height: 220,
                     padding: const EdgeInsets.all(16),
                     decoration: _modernCardDecoration(),
-                    child: BarChart(
-                      BarChartData(
-                        gridData: FlGridData(show: false),
-                        borderData: FlBorderData(show: false),
-                        alignment: BarChartAlignment.spaceAround,
-                        titlesData: FlTitlesData(
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                const labels = [
-                                  'Overall',
-                                  'Week',
-                                  'Month',
-                                  'Year',
-                                ];
-                                if (value.toInt() >= 0 &&
-                                    value.toInt() < labels.length) {
-                                  return Text(
-                                    labels[value.toInt()],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  );
-                                }
-                                return const Text('');
-                              },
-                            ),
-                          ),
-                          leftTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 10,
+                      children: [
+                        _buildProgressRow(
+                          label: "Today",
+                          value: analytics.completionRate,
+                          color: Colors.indigoAccent,
                         ),
-                        barGroups: [
-                          _buildBarGroup(
-                            0,
-                            analytics.completionRate,
-                            Colors.indigoAccent,
-                          ),
-                          _buildBarGroup(
-                            1,
-                            analytics.weeklyCompletionRate,
-                            Colors.tealAccent.shade700,
-                          ),
-                          _buildBarGroup(
-                            2,
-                            analytics.monthlyCompletionRate,
-                            Colors.orange.shade400,
-                          ),
-                          _buildBarGroup(
-                            3,
-                            analytics.yearlyCompletionRate,
-                            Colors.red,
-                          ),
-                        ],
-                      ),
-                      swapAnimationDuration: const Duration(milliseconds: 800),
-                      swapAnimationCurve: Curves.easeOutCubic,
+
+                        _buildProgressRow(
+                          label: "Weekly",
+                          value: analytics.weeklyCompletionRate,
+                          color: Colors.tealAccent.shade700,
+                        ),
+
+                        _buildProgressRow(
+                          label: "Monthly",
+                          value: analytics.monthlyCompletionRate,
+                          color: Colors.orange.shade400,
+                        ),
+
+                        _buildProgressRow(
+                          label: "Yearly",
+                          value: analytics.yearlyCompletionRate,
+                          color: Colors.red,
+                        ),
+                      ],
                     ),
                   ),
+
                   const SizedBox(height: 30),
 
                   // Most Active Days as Bar Chart
-                  _buildSectionHeader("📅 Most Active Days"),
+                  _buildSectionHeader("Most Active Days"),
                   const SizedBox(height: 12),
                   Container(
                     height: 220,
@@ -268,14 +213,12 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
                           );
                         }),
                       ),
-                      swapAnimationDuration: const Duration(milliseconds: 800),
-                      swapAnimationCurve: Curves.easeOutCubic,
                     ),
                   ),
                   const SizedBox(height: 30),
 
                   // Achievements Section
-                  _buildSectionHeader("🏆 Achievements"),
+                  _buildSectionHeader("Achievements"),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 10,
@@ -306,6 +249,41 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
     );
   }
 
+  Widget _buildProgressRow({
+    required String label,
+    required double value,
+    required Color color,
+  }) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 70,
+          child: Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: LinearProgressIndicator(
+              value: (value.clamp(0, 100)) / 100,
+              minHeight: 14,
+              backgroundColor: Colors.grey.shade200,
+              valueColor: AlwaysStoppedAnimation(color),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          "${value.toStringAsFixed(0)}%",
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
   // Modern Stat Card widget
   Widget _buildStatCard({
     required IconData icon,
@@ -318,18 +296,26 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
       decoration: _modernCardDecoration(),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        spacing: 10,
         children: [
           CircleAvatar(
             backgroundColor: color.withValues(alpha: 0.1),
             child: Icon(icon, color: color),
           ),
-          const SizedBox(height: 8),
+
           Text(
             value,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.w900),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
-          Text(title, style: const TextStyle(color: Colors.black54)),
+
+          Text(
+            title,
+            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
@@ -339,31 +325,9 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: Colors.black87,
-      ),
-    );
-  }
-
-  // Bar chart group helper
-  BarChartGroupData _buildBarGroup(int x, double y, Color color) {
-    return BarChartGroupData(
-      x: x,
-      barRods: [
-        BarChartRodData(
-          toY: y,
-          color: color,
-          width: 22,
-          borderRadius: BorderRadius.circular(6),
-          backDrawRodData: BackgroundBarChartRodData(
-            show: true,
-            toY: 100,
-            color: Colors.grey.shade200,
-          ),
-        ),
-      ],
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w900),
     );
   }
 

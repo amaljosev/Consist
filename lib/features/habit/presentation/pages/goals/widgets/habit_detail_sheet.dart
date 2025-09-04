@@ -161,28 +161,32 @@ Future<dynamic> habitDetailSheet({
                   ),
                 ),
               if (isComplete)
-                Wrap(
-                  runAlignment: WrapAlignment.spaceEvenly,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 10,
-                  children: [
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          spacing: 5,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(Icons.check, color: Colors.green),
-                            Text(
-                              'Complete now',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
+                GestureDetector(
+                  onTap: !isComplete
+                      ? () {}
+                      : () {
+                          context.read<HabitsBloc>().add(
+                            MarkHabitCompleteEvent(habitId: habit.id),
+                          );
+                          Navigator.pop(context);
+                        },
+                  child: Card(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        spacing: 5,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.check, color: Colors.green),
+                          Text(
+                            'Complete now',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
             ],
           ),
