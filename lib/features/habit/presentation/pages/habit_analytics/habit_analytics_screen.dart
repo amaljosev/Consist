@@ -1,4 +1,8 @@
+import 'package:consist/core/utils/converters.dart';
+import 'package:consist/core/widgets/error_widget.dart';
+import 'package:consist/core/widgets/loading_widget.dart';
 import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_bloc.dart';
+import 'package:consist/features/habit/presentation/widgets/calender_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -51,9 +55,9 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
       body: BlocBuilder<HabitsBloc, HabitsState>(
         builder: (context, state) {
           if (state is HabitAnalyticsLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoading();
           } else if (state is HabitAnalyticsError) {
-            return Center(child: Text('Error: ${state.message}'));
+            return ErrorScreenWidget();
           } else if (state is HabitAnalyticsLoaded) {
             final analytics = state.analytics;
 
@@ -70,176 +74,183 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.local_fire_department,
-                          title: "Current Streak",
-                          value: analytics.currentStreak.toString(),
-                          color: Colors.orangeAccent,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.star,
-                          title: "Best Streak",
-                          value: analytics.bestStreak.toString(),
-                          color: Colors.amber,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.emoji_events,
-                          title: "Stars Earned",
-                          value: analytics.starsEarned.toString(),
-                          color: Colors.blueAccent,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Completion Rates Chart
-                  // Replace the entire "Completion Rates Chart" section with this:
-
-                  // Completion Rates Progress Indicators
-                  _buildSectionHeader("Completion Rates"),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: _modernCardDecoration(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 10,
+              child: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildProgressRow(
-                          label: "Today",
-                          value: analytics.completionRate,
-                          color: Colors.indigoAccent,
+                        Expanded(
+                          child: _buildStatCard(
+                            icon: Icons.local_fire_department,
+                            title: "Current Streak",
+                            value: analytics.currentStreak.toString(),
+                            color: Colors.orangeAccent,
+                          ),
                         ),
-
-                        _buildProgressRow(
-                          label: "Weekly",
-                          value: analytics.weeklyCompletionRate,
-                          color: Colors.tealAccent.shade700,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildStatCard(
+                            icon: Icons.star,
+                            title: "Best Streak",
+                            value: analytics.bestStreak.toString(),
+                            color: Colors.amber,
+                          ),
                         ),
-
-                        _buildProgressRow(
-                          label: "Monthly",
-                          value: analytics.monthlyCompletionRate,
-                          color: Colors.orange.shade400,
-                        ),
-
-                        _buildProgressRow(
-                          label: "Yearly",
-                          value: analytics.yearlyCompletionRate,
-                          color: Colors.red,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildStatCard(
+                            icon: Icons.emoji_events,
+                            title: "Stars Earned",
+                            value: analytics.starsEarned.toString(),
+                            color: Colors.blueAccent,
+                          ),
                         ),
                       ],
                     ),
-                  ),
-
-                  const SizedBox(height: 30),
-
-                  // Most Active Days as Bar Chart
-                  _buildSectionHeader("Most Active Days"),
-                  const SizedBox(height: 12),
-                  Container(
-                    height: 220,
-                    padding: const EdgeInsets.all(16),
-                    decoration: _modernCardDecoration(),
-                    child: BarChart(
-                      BarChartData(
-                        gridData: FlGridData(show: false),
-                        borderData: FlBorderData(show: false),
-                        alignment: BarChartAlignment.spaceAround,
-                        maxY: maxDayCount.toDouble() + 1,
-                        titlesData: FlTitlesData(
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                const labels = [
-                                  'Mon',
-                                  'Tue',
-                                  'Wed',
-                                  'Thu',
-                                  'Fri',
-                                  'Sat',
-                                  'Sun',
-                                ];
-                                if (value.toInt() >= 0 &&
-                                    value.toInt() < labels.length) {
-                                  return Text(
-                                    labels[value.toInt()],
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  );
-                                }
-                                return const Text('');
-                              },
-                            ),
+                    const SizedBox(height: 30),
+                    //streak calender section
+                    _buildSectionHeader("Streak Range"),
+                    const SizedBox(height: 16),
+                    _buildStreakCalender(
+                      AppConverters.stringToDateTime(analytics.streakStartedAt),
+                      AppConverters.stringToDateTime(analytics.lastDay),
+                    ),
+                    const SizedBox(height: 30),
+                    // Completion Rates Progress Indicators
+                    _buildSectionHeader("Completion Rates"),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: _modernCardDecoration(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 10,
+                        children: [
+                          _buildProgressRow(
+                            label: "Today",
+                            value: analytics.completionRate,
+                            color: Colors.indigoAccent,
                           ),
-                          leftTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
+                
+                          _buildProgressRow(
+                            label: "Weekly",
+                            value: analytics.weeklyCompletionRate,
+                            color: Colors.tealAccent.shade700,
                           ),
-                        ),
-                        barGroups: List.generate(7, (index) {
-                          final dayIndex = index + 1;
-                          final count = dayCounts[dayIndex]?.toDouble() ?? 0;
-                          return BarChartGroupData(
-                            x: index,
-                            barRods: [
-                              BarChartRodData(
-                                toY: count,
-                                color: Colors.indigoAccent,
-                                width: 20,
-                                borderRadius: BorderRadius.circular(6),
-                                backDrawRodData: BackgroundBarChartRodData(
-                                  show: true,
-                                  toY: maxDayCount.toDouble() + 1,
-                                  color: Colors.grey.shade200,
-                                ),
-                              ),
-                            ],
-                          );
-                        }),
+                
+                          _buildProgressRow(
+                            label: "Monthly",
+                            value: analytics.monthlyCompletionRate,
+                            color: Colors.orange.shade400,
+                          ),
+                
+                          _buildProgressRow(
+                            label: "Yearly",
+                            value: analytics.yearlyCompletionRate,
+                            color: Colors.red,
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 30),
-
-                  // Achievements Section
-                  _buildSectionHeader("Achievements"),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 10,
-                    runSpacing: 8,
-                    children: analytics.achievements.isEmpty
-                        ? [const Chip(label: Text('No achievements yet'))]
-                        : analytics.achievements
-                              .map(
-                                (a) => Chip(
-                                  label: Text("Achievement #$a"),
-                                  backgroundColor: Colors.green.shade50,
-                                  avatar: const Icon(
-                                    Icons.check_circle,
-                                    size: 18,
-                                    color: Colors.green,
+                
+                    const SizedBox(height: 30),
+                
+                    // Most Active Days as Bar Chart
+                    _buildSectionHeader("Most Active Days"),
+                    const SizedBox(height: 12),
+                    Container(
+                      height: 220,
+                      padding: const EdgeInsets.all(16),
+                      decoration: _modernCardDecoration(),
+                      child: BarChart(
+                        BarChartData(
+                          gridData: FlGridData(show: false),
+                          borderData: FlBorderData(show: false),
+                
+                          alignment: BarChartAlignment.spaceAround,
+                          maxY: maxDayCount.toDouble() + 1,
+                          titlesData: FlTitlesData(
+                            topTitles: const AxisTitles(),
+                            leftTitles: const AxisTitles(),
+                            rightTitles: const AxisTitles(),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: (value, meta) {
+                                  const labels = [
+                                    'Mon',
+                                    'Tue',
+                                    'Wed',
+                                    'Thu',
+                                    'Fri',
+                                    'Sat',
+                                    'Sun',
+                                  ];
+                                  if (value.toInt() >= 0 &&
+                                      value.toInt() < labels.length) {
+                                    return Text(
+                                      labels[value.toInt()],
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    );
+                                  }
+                                  return const Text('');
+                                },
+                              ),
+                            ),
+                          ),
+                          barGroups: List.generate(7, (index) {
+                            final dayIndex = index + 1;
+                            final count = dayCounts[dayIndex]?.toDouble() ?? 0;
+                            return BarChartGroupData(
+                              x: index,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: count,
+                                  color: Colors.indigoAccent,
+                                  width: 20,
+                                  borderRadius: BorderRadius.circular(6),
+                                  backDrawRodData: BackgroundBarChartRodData(
+                                    show: true,
+                                    toY: maxDayCount.toDouble() + 1,
+                                    color: Colors.grey.shade200,
                                   ),
                                 ),
-                              )
-                              .toList(),
-                  ),
-                ],
+                              ],
+                            );
+                          }),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                
+                    // Achievements Section
+                    _buildSectionHeader("Achievements"),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 8,
+                      children: analytics.achievements.isEmpty
+                          ? [const Chip(label: Text('No achievements yet'))]
+                          : analytics.achievements
+                                .map(
+                                  (a) => Chip(
+                                    label: Text("Achievement #$a"),
+                                    backgroundColor: Colors.green.shade50,
+                                    avatar: const Icon(
+                                      Icons.check_circle,
+                                      size: 18,
+                                      color: Colors.green,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -340,5 +351,19 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
         BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
       ],
     );
+  }
+
+  _buildStreakCalender(DateTime? streakStartedAt, DateTime? lastUpdated) {
+    return streakStartedAt != null
+        ? Container(
+            padding: const EdgeInsets.all(16),
+            decoration: _modernCardDecoration(),
+            child: HabitAnalyticsCalendarWidget(
+              rangeStartDay: streakStartedAt,
+              rangeEndDay: lastUpdated,
+              showHeader: true,
+            ),
+          )
+        : SizedBox();
   }
 }

@@ -163,63 +163,67 @@ class _CreateScreenState extends State<CreateScreen> {
                           ),
                         ),
 
-                        Card(
-                          color: isDark ? Colors.black26 : null,
-                          child: Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Column(
-                              children: [
-                                HabitCategoryWidget(
-                                  habitCategory: habit.category,
-                                  isDark: isDark,
-                                ),
-                                Divider(
-                                  height: 0,
-                                  color: isDark ? null : Colors.black12,
-                                ),
-
-                                HabitStartAtWidget(
-                                  habitStartAt: AppConverters.stringToDateTime(
-                                    habit.habitStartAt,
+                        if (habit.category != '3')
+                          Card(
+                            color: isDark ? Colors.black26 : null,
+                            child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Column(
+                                children: [
+                                  HabitCategoryWidget(
+                                    habitCategory: habit.category,
+                                    isDark: isDark,
+                                    isUpdate: widget.habit!=null,
                                   ),
-                                  isDark: isDark,
-                                ),
-                                Divider(
-                                  height: 0,
-                                  color: isDark ? null : Colors.black12,
-                                ),
+                                  Divider(
+                                    height: 0,
+                                    color: isDark ? null : Colors.black12,
+                                  ),
 
-                                HabitTimeWidget(habitTime: habit.habitTime),
-                                Divider(
-                                  height: 0,
-                                  color: isDark ? null : Colors.black12,
-                                ),
-
-                                if (habit.category != '3')
-                                  HabitRepeatWidget(
-                                    habitRepeat: habit.habitRepeatValue,
-
-                                    bgColor: AppConverters.stringToColor(
-                                      habit.habitColorId,
+                                  if (widget.habit == null)
+                                    HabitStartAtWidget(
+                                      habitStartAt:
+                                          AppConverters.stringToDateTime(
+                                            habit.habitStartAt,
+                                          ),
+                                      isDark: isDark,
                                     ),
+                                  Divider(
+                                    height: 0,
+                                    color: isDark ? null : Colors.black12,
                                   ),
-                                Divider(
-                                  height: 0,
-                                  color: isDark ? null : Colors.black12,
-                                ),
-                                DurationWidget(habitEndAt: habit.habitEndAt),
-                                Divider(
-                                  height: 0,
-                                  color: isDark ? null : Colors.black12,
-                                ),
 
-                                HabitRemainderWidget(
-                                  time: habit.habitRemindTime,
-                                ),
-                              ],
+                                  HabitTimeWidget(habitTime: habit.habitTime),
+                                  Divider(
+                                    height: 0,
+                                    color: isDark ? null : Colors.black12,
+                                  ),
+
+                                  if (habit.category != '3')
+                                    HabitRepeatWidget(
+                                      habitRepeat: habit.habitRepeatValue,
+
+                                      bgColor: AppConverters.stringToColor(
+                                        habit.habitColorId,
+                                      ),
+                                    ),
+                                  Divider(
+                                    height: 0,
+                                    color: isDark ? null : Colors.black12,
+                                  ),
+                                  DurationWidget(habitEndAt: habit.habitEndAt),
+                                  Divider(
+                                    height: 0,
+                                    color: isDark ? null : Colors.black12,
+                                  ),
+
+                                  HabitRemainderWidget(
+                                    time: habit.habitRemindTime,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
 
                         AddNoteWidget(
                           isDark: isDark,

@@ -119,7 +119,7 @@ class UpdateRepeatDaysEvent extends CreateEvent {
 }
 
 class UpdateHabitRemindTimeEvent extends CreateEvent {
-  final String remindTime;
+  final String? remindTime;
 
   const UpdateHabitRemindTimeEvent(this.remindTime);
 

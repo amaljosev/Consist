@@ -10,10 +10,12 @@ class HabitCategoryWidget extends StatelessWidget {
     super.key,
     required this.habitCategory,
     required this.isDark,
+    required this.isUpdate,
   });
 
   final String? habitCategory;
   final bool isDark;
+  final bool isUpdate;
 
   @override
   Widget build(BuildContext context) {
@@ -32,23 +34,29 @@ class HabitCategoryWidget extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: List.generate(HabitsItems.habitCategories.length-1, (
-                    index,
-                  ) {
-                    final item = HabitsItems.habitCategories[index+1];
-                    final name = item['name'];
-                    return ListTile(
-                      trailing: Icon(item['icon']),
-                      title: Text(name ?? ''),
-                      titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                      onTap: () {
-                        context.read<CreateBloc>().add(
-                          UpdateHabitCategoryEvent(item['id'] ?? '0'),
-                        );
-                        Navigator.pop(context);
-                      },
-                    );
-                  }),
+                  children: [
+                    for (int i = 1; i < HabitsItems.habitCategories.length; i++)
+                      if (!(isUpdate && i == 3))
+                        ListTile(
+                          trailing: Icon(
+                            HabitsItems.habitCategories[i]['icon'],
+                          ),
+                          title: Text(
+                            HabitsItems.habitCategories[i]['name'] ?? '',
+                          ),
+                          titleTextStyle: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium,
+                          onTap: () {
+                            context.read<CreateBloc>().add(
+                              UpdateHabitCategoryEvent(
+                                HabitsItems.habitCategories[i]['id'] ?? '0',
+                              ),
+                            );
+                            Navigator.pop(context);
+                          },
+                        ),
+                  ],
                 ),
               ),
             ),

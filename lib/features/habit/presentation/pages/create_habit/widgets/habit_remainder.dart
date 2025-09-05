@@ -41,7 +41,7 @@ class HabitRemainderWidget extends StatelessWidget {
                         height: 200,
                         child: CupertinoDatePicker(
                           mode: CupertinoDatePickerMode.time,
-                          use24hFormat: false, // ensures 12h format with AM/PM
+                          use24hFormat: false, 
                           initialDateTime: DateTime.now(),
                           onDateTimeChanged: (DateTime newTime) {
                             setState(() {

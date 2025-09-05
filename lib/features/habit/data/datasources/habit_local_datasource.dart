@@ -49,6 +49,8 @@ class HabitDatabase {
       await db.execute('''
         CREATE TABLE habit_analytics (
           habitId TEXT PRIMARY KEY,
+          createdAt TEXT,           
+          streakStartedAt TEXT,     
           lastDay TEXT,
           currentStreak TEXT,
           bestStreak TEXT,
@@ -60,7 +62,7 @@ class HabitDatabase {
           starsEarned TEXT,
           achievements TEXT,
           FOREIGN KEY (habitId) REFERENCES habits(id) ON DELETE CASCADE
-        )
+        );
       ''');
     } catch (e) {
       log("Error creating tables: $e");
@@ -90,6 +92,8 @@ class HabitDatabase {
           .then(
             (value) async => await db.insert('habit_analytics', {
               'habitId': habit.id,
+              'createdAt': DateTime.now().toString(),
+              'streakStartedAt': '',
               'currentStreak': '0',
               'bestStreak': '0',
               'mostActiveDays': jsonEncode(<int>[]),
@@ -249,6 +253,7 @@ class HabitDatabase {
           'starsEarned': analytics.starsEarned.toString(),
           'lastDay': analytics.lastDay,
           'achievements': jsonEncode(analytics.achievements),
+          'streakStartedAt': analytics.streakStartedAt,
         },
         where: 'habitId = ?',
         whereArgs: [habitId],
@@ -315,6 +320,8 @@ class HabitDatabase {
     }
   }
 
+  // ✅ calculate and update analytics
+
   Future<HabitAnalytics?> calculateUpdatedAnalytics(String habitId) async {
     try {
       final db = await instance.database;
@@ -339,11 +346,13 @@ class HabitDatabase {
 
       int currentStreak = current.currentStreak;
       int bestStreak = current.bestStreak;
+      String streakStartedAt = current.streakStartedAt;
 
       // 🔹 Streak logic
       if (lastDay == null) {
         // First ever completion
         currentStreak = 1;
+        streakStartedAt = today.toIso8601String();
       } else {
         final diff = today
             .difference(DateTime(lastDay.year, lastDay.month, lastDay.day))
@@ -355,7 +364,9 @@ class HabitDatabase {
         } else if (diff == 1) {
           currentStreak += 1;
         } else {
-          currentStreak = 1; // streak broken, start over
+          // streak broken, start over
+          currentStreak = 1;
+          streakStartedAt = today.toIso8601String();
         }
       }
 
@@ -363,20 +374,17 @@ class HabitDatabase {
         bestStreak = currentStreak;
       }
 
-      // 🔹 Most active days (stored as list<int> or map)
-      List<int> mostActiveDays = current.mostActiveDays;
+      // 🔹 Most active days
+      List<int> mostActiveDays = List.from(current.mostActiveDays);
       mostActiveDays.add(today.weekday);
 
-      // 🔹 Completion rate (simplistic increment)
-      // For more accuracy, log all completions and calculate on demand.
-      double completionRate = (current.completionRate) + 1;
+      // 🔹 Increment completion rates (simplistic)
+      double completionRate = current.completionRate + 1;
+      double weekly = current.weeklyCompletionRate + 1;
+      double monthly = current.monthlyCompletionRate + 1;
+      double yearly = current.yearlyCompletionRate + 1;
 
-      // 🔹 Weekly/Monthly/Yearly (if you track counts separately)
-      double weekly = (current.weeklyCompletionRate) + 1;
-      double monthly = (current.monthlyCompletionRate) + 1;
-      double yearly = (current.yearlyCompletionRate) + 1;
-
-      return current.copyWith(
+      final updated = current.copyWith(
         lastDay: today.toIso8601String(),
         currentStreak: currentStreak,
         bestStreak: bestStreak,
@@ -385,13 +393,93 @@ class HabitDatabase {
         weeklyCompletionRate: weekly,
         monthlyCompletionRate: monthly,
         yearlyCompletionRate: yearly,
-        // optionally stars/achievements logic here
+        streakStartedAt: streakStartedAt,
+        
       );
+
+      // 🔹 Persist back to DB
+      await db.update(
+        'habit_analytics',
+        updated.toMap(),
+        where: 'habitId = ?',
+        whereArgs: [habitId],
+      );
+
+      return updated;
     } catch (e) {
       log("Error calculating updated analytics: $e");
       return null;
     }
   }
+
+  // update streak
+
+  Future<HabitAnalytics?> checkAndUpdateStreak(String habitId) async {
+  try {
+    final db = await HabitDatabase.instance.database;
+
+    final analyticsMap = await db.query(
+      'habit_analytics',
+      where: 'habitId = ?',
+      whereArgs: [habitId],
+    );
+
+    if (analyticsMap.isEmpty) return null;
+
+    final analytics = HabitAnalytics.fromMap(analyticsMap.first);
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    DateTime? lastDay;
+    if (analytics.lastDay.isNotEmpty) {
+      lastDay = DateTime.tryParse(analytics.lastDay);
+    }
+
+    int currentStreak = analytics.currentStreak;
+    String streakStartedAt = analytics.streakStartedAt;
+
+    if (lastDay == null) {
+      // No last day recorded → no streak yet
+      return analytics;
+    }
+
+    final diff = today.difference(DateTime(lastDay.year, lastDay.month, lastDay.day)).inDays;
+
+    if (diff == 0) {
+      // Already completed today → streak intact
+      return analytics;
+    } else if (diff == 1) {
+      // Yesterday completed, today not yet → streak still valid
+      return analytics;
+    } else if (diff > 1) {
+      // User missed at least one day → streak broken
+      currentStreak = 0;
+      streakStartedAt = ''; // Clear or reset
+    }
+
+    final updatedAnalytics = analytics.copyWith(
+      currentStreak: currentStreak,
+      streakStartedAt: streakStartedAt,
+    );
+
+    await db.update(
+      'habit_analytics',
+      {
+        'currentStreak': updatedAnalytics.currentStreak.toString(),
+        'streakStartedAt': updatedAnalytics.streakStartedAt,
+      },
+      where: 'habitId = ?',
+      whereArgs: [habitId],
+    );
+
+    return updatedAnalytics;
+  } catch (e, st) {
+    log("Error checking/updating streak: $e\n$st");
+    return null;
+  }
+}
+
 
   Future<void> resetDatabase() async {
     final dbPath = await getDatabasesPath();
