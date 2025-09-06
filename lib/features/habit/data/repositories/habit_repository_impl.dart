@@ -38,11 +38,13 @@ class HabitRepositoryImpl implements HabitRepository {
     required String habitId,
     required String completionDate,
     required HabitAnalytics analytics,
+    required bool isComplete
   }) async {
     await db.markHabitComplete(
       habitId: habitId,
       completionDate: completionDate,
       analytics: analytics,
+      isCompleted: isComplete
     );
   }
 

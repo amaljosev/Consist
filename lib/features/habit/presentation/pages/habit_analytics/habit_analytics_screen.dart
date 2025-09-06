@@ -128,24 +128,24 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         spacing: 10,
                         children: [
-                          _buildProgressRow(
-                            label: "Today",
-                            value: analytics.completionRate,
-                            color: Colors.indigoAccent,
-                          ),
-                
+                          // _buildProgressRow(
+                          //   label: "Today",
+                          //   value: analytics.completionRate,
+                          //   color: Colors.indigoAccent,
+                          // ),
+
                           _buildProgressRow(
                             label: "Weekly",
                             value: analytics.weeklyCompletionRate,
                             color: Colors.tealAccent.shade700,
                           ),
-                
+
                           _buildProgressRow(
                             label: "Monthly",
                             value: analytics.monthlyCompletionRate,
                             color: Colors.orange.shade400,
                           ),
-                
+
                           _buildProgressRow(
                             label: "Yearly",
                             value: analytics.yearlyCompletionRate,
@@ -154,9 +154,9 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
                         ],
                       ),
                     ),
-                
+
                     const SizedBox(height: 30),
-                
+
                     // Most Active Days as Bar Chart
                     _buildSectionHeader("Most Active Days"),
                     const SizedBox(height: 12),
@@ -168,7 +168,7 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
                         BarChartData(
                           gridData: FlGridData(show: false),
                           borderData: FlBorderData(show: false),
-                
+
                           alignment: BarChartAlignment.spaceAround,
                           maxY: maxDayCount.toDouble() + 1,
                           titlesData: FlTitlesData(
@@ -226,7 +226,7 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                
+
                     // Achievements Section
                     _buildSectionHeader("Achievements"),
                     const SizedBox(height: 12),
@@ -354,16 +354,14 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
   }
 
   _buildStreakCalender(DateTime? streakStartedAt, DateTime? lastUpdated) {
-    return streakStartedAt != null
-        ? Container(
-            padding: const EdgeInsets.all(16),
-            decoration: _modernCardDecoration(),
-            child: HabitAnalyticsCalendarWidget(
-              rangeStartDay: streakStartedAt,
-              rangeEndDay: lastUpdated,
-              showHeader: true,
-            ),
-          )
-        : SizedBox();
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _modernCardDecoration(),
+      child: HabitAnalyticsCalendarWidget(
+        rangeStartDay: streakStartedAt,
+        rangeEndDay: lastUpdated,
+        showHeader: true,
+      ),
+    );
   }
 }

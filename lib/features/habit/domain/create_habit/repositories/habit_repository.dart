@@ -11,6 +11,7 @@ abstract class HabitRepository {
     required String habitId,
     required String completionDate,
     required HabitAnalytics analytics,
+    required bool isComplete
   });
   Future<List<Habit>> getHabitsByCategory(String category);
   Future<HabitAnalytics?> getHabitAnalytics(String id);

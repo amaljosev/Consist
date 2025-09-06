@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:consist/features/habit/domain/create_habit/entities/analytics_models.dart';
 import 'package:consist/features/habit/domain/create_habit/entities/habit_model.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -64,6 +65,15 @@ class HabitDatabase {
           FOREIGN KEY (habitId) REFERENCES habits(id) ON DELETE CASCADE
         );
       ''');
+      await db.execute('''
+  CREATE TABLE habit_completions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  habitId TEXT,
+  completionDate TEXT,
+  isCompleted INTEGER,
+  FOREIGN KEY (habitId) REFERENCES habits(id) ON DELETE CASCADE
+);
+''');
     } catch (e) {
       log("Error creating tables: $e");
     }
@@ -225,21 +235,38 @@ class HabitDatabase {
 
   Future<void> markHabitComplete({
     required String habitId,
-    required String completionDate,
+    required String completionDate, // Format: 'YYYY-MM-DD'
     required HabitAnalytics analytics,
+    required bool isCompleted,
   }) async {
     try {
       final db = await instance.database;
-
-      // 1️⃣ Update habit's isCompleteToday
       await db.update(
         'habits',
         {'isCompleteToday': completionDate},
         where: 'id = ?',
         whereArgs: [habitId],
       );
+      // 1️⃣ Insert (or update) completion event for this habit & date.
+      final formattedDate = normalizeDateString(completionDate);
+      await db.insert('habit_completions', {
+        'habitId': habitId,
+        'completionDate': formattedDate,
+        'isCompleted': isCompleted ? 1 : 0,
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
 
-      // 2️⃣ Update habit analytics
+      // 3️⃣ Recalculate the weekly completion rate using actual completion data
+      double weeklyCompletionRate = await calculateWeeklyCompletionRate(
+        habitId,
+      );
+      double monthlyCompletionRate = await calculateMonthlyCompletionRate(
+        habitId,
+      );
+      double yearlyCompletionRate = await calculateYearlyCompletionRate(
+        habitId,
+      );
+
+      // 4️⃣ Update analytics (after recalculating)
       await db.update(
         'habit_analytics',
         {
@@ -247,9 +274,9 @@ class HabitDatabase {
           'bestStreak': analytics.bestStreak.toString(),
           'mostActiveDays': jsonEncode(analytics.mostActiveDays),
           'completionRate': analytics.completionRate.toString(),
-          'weeklyCompletionRate': analytics.weeklyCompletionRate.toString(),
-          'monthlyCompletionRate': analytics.monthlyCompletionRate.toString(),
-          'yearlyCompletionRate': analytics.yearlyCompletionRate.toString(),
+          'weeklyCompletionRate': weeklyCompletionRate.toString(),
+          'monthlyCompletionRate': monthlyCompletionRate.toString(),
+          'yearlyCompletionRate': yearlyCompletionRate.toString(),
           'starsEarned': analytics.starsEarned.toString(),
           'lastDay': analytics.lastDay,
           'achievements': jsonEncode(analytics.achievements),
@@ -262,6 +289,69 @@ class HabitDatabase {
       log("Error marking habit complete: $e");
     }
   }
+
+  Future<double> calculateWeeklyCompletionRate(String habitId) async {
+    final db = await instance.database;
+    final today = DateTime.now();
+    final weekAgo = today.subtract(Duration(days: 6));
+    final maps = await db.query(
+      'habit_completions',
+      where: 'habitId = ? AND completionDate BETWEEN ? AND ?',
+      whereArgs: [
+        habitId,
+        weekAgo.toIso8601String().substring(0, 10),
+        today.toIso8601String().substring(0, 10),
+      ],
+    );
+    if (maps.isEmpty) return 0.0;
+    int completed = maps.where((m) => m['isCompleted'] == 1).length;
+    int totalDays = 7; // Or count days with expected completions
+    return (completed / totalDays) * 100.0;
+  }
+
+  Future<double> calculateMonthlyCompletionRate(String habitId) async {
+  final db = await instance.database;
+  final today = DateTime.now();
+  final beginningOfMonth = DateTime(today.year, today.month, 1);
+  final endOfMonth =
+      DateTime(today.year, today.month + 1, 0); // Last day of current month
+
+  final maps = await db.query(
+    'habit_completions',
+    where: 'habitId = ? AND completionDate BETWEEN ? AND ?',
+    whereArgs: [
+      habitId,
+      beginningOfMonth.toIso8601String().substring(0, 10),
+      endOfMonth.toIso8601String().substring(0, 10),
+    ],
+  );
+  if (maps.isEmpty) return 0.0;
+  int completed = maps.where((m) => m['isCompleted'] == 1).length;
+  int totalDays = endOfMonth.day; // Number of days in the month
+  return (completed / totalDays) * 100.0;
+}
+
+Future<double> calculateYearlyCompletionRate(String habitId) async {
+  final db = await instance.database;
+  final today = DateTime.now();
+  final beginningOfYear = DateTime(today.year, 1, 1);
+  final endOfYear = DateTime(today.year, 12, 31);
+
+  final maps = await db.query(
+    'habit_completions',
+    where: 'habitId = ? AND completionDate BETWEEN ? AND ?',
+    whereArgs: [
+      habitId,
+      beginningOfYear.toIso8601String().substring(0, 10),
+      endOfYear.toIso8601String().substring(0, 10),
+    ],
+  );
+  if (maps.isEmpty) return 0.0;
+  int completed = maps.where((m) => m['isCompleted'] == 1).length;
+  int totalDays = 365; // Not accounting for leap years for simplicity
+  return (completed / totalDays) * 100.0;
+}
+
 
   // ✅ Get habits by category
   Future<List<Habit>> getHabitsByCategory(String category) async {
@@ -394,7 +484,6 @@ class HabitDatabase {
         monthlyCompletionRate: monthly,
         yearlyCompletionRate: yearly,
         streakStartedAt: streakStartedAt,
-        
       );
 
       // 🔹 Persist back to DB
@@ -415,71 +504,72 @@ class HabitDatabase {
   // update streak
 
   Future<HabitAnalytics?> checkAndUpdateStreak(String habitId) async {
-  try {
-    final db = await HabitDatabase.instance.database;
+    try {
+      final db = await HabitDatabase.instance.database;
 
-    final analyticsMap = await db.query(
-      'habit_analytics',
-      where: 'habitId = ?',
-      whereArgs: [habitId],
-    );
+      final analyticsMap = await db.query(
+        'habit_analytics',
+        where: 'habitId = ?',
+        whereArgs: [habitId],
+      );
 
-    if (analyticsMap.isEmpty) return null;
+      if (analyticsMap.isEmpty) return null;
 
-    final analytics = HabitAnalytics.fromMap(analyticsMap.first);
+      final analytics = HabitAnalytics.fromMap(analyticsMap.first);
 
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
 
-    DateTime? lastDay;
-    if (analytics.lastDay.isNotEmpty) {
-      lastDay = DateTime.tryParse(analytics.lastDay);
+      DateTime? lastDay;
+      if (analytics.lastDay.isNotEmpty) {
+        lastDay = DateTime.tryParse(analytics.lastDay);
+      }
+
+      int currentStreak = analytics.currentStreak;
+      String streakStartedAt = analytics.streakStartedAt;
+
+      if (lastDay == null) {
+        // No last day recorded → no streak yet
+        return analytics;
+      }
+
+      final diff = today
+          .difference(DateTime(lastDay.year, lastDay.month, lastDay.day))
+          .inDays;
+
+      if (diff == 0) {
+        // Already completed today → streak intact
+        return analytics;
+      } else if (diff == 1) {
+        // Yesterday completed, today not yet → streak still valid
+        return analytics;
+      } else if (diff > 1) {
+        // User missed at least one day → streak broken
+        currentStreak = 0;
+        streakStartedAt = ''; // Clear or reset
+      }
+
+      final updatedAnalytics = analytics.copyWith(
+        currentStreak: currentStreak,
+        streakStartedAt: streakStartedAt,
+      );
+
+      await db.update(
+        'habit_analytics',
+        {
+          'currentStreak': updatedAnalytics.currentStreak.toString(),
+          'streakStartedAt': updatedAnalytics.streakStartedAt,
+        },
+        where: 'habitId = ?',
+        whereArgs: [habitId],
+      );
+
+      return updatedAnalytics;
+    } catch (e, st) {
+      log("Error checking/updating streak: $e\n$st");
+      return null;
     }
-
-    int currentStreak = analytics.currentStreak;
-    String streakStartedAt = analytics.streakStartedAt;
-
-    if (lastDay == null) {
-      // No last day recorded → no streak yet
-      return analytics;
-    }
-
-    final diff = today.difference(DateTime(lastDay.year, lastDay.month, lastDay.day)).inDays;
-
-    if (diff == 0) {
-      // Already completed today → streak intact
-      return analytics;
-    } else if (diff == 1) {
-      // Yesterday completed, today not yet → streak still valid
-      return analytics;
-    } else if (diff > 1) {
-      // User missed at least one day → streak broken
-      currentStreak = 0;
-      streakStartedAt = ''; // Clear or reset
-    }
-
-    final updatedAnalytics = analytics.copyWith(
-      currentStreak: currentStreak,
-      streakStartedAt: streakStartedAt,
-    );
-
-    await db.update(
-      'habit_analytics',
-      {
-        'currentStreak': updatedAnalytics.currentStreak.toString(),
-        'streakStartedAt': updatedAnalytics.streakStartedAt,
-      },
-      where: 'habitId = ?',
-      whereArgs: [habitId],
-    );
-
-    return updatedAnalytics;
-  } catch (e, st) {
-    log("Error checking/updating streak: $e\n$st");
-    return null;
   }
-}
-
 
   Future<void> resetDatabase() async {
     final dbPath = await getDatabasesPath();
@@ -491,5 +581,17 @@ class HabitDatabase {
     } catch (e) {
       log("❌ Error deleting database: $e");
     }
+  }
+
+  String normalizeDateString(String date) {
+    // Replace colons with slashes or whatever matches your format, then parse
+    final parts = date.split(':'); // ['11', '9', '2025']
+    final day = int.parse(parts[0]);
+    final month = int.parse(parts[1]);
+    final year = int.parse(parts[2]);
+    final dateTime = DateTime(year, month, day);
+    // Format to ISO 8601
+    final formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
+    return formattedDate;
   }
 }

@@ -75,6 +75,7 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
           habitId: event.habitId,
           completionDate: todayStr,
           analytics: analytics!,
+          isComplete: true
         );
 
         emit(HabitCompleteSuccess());
