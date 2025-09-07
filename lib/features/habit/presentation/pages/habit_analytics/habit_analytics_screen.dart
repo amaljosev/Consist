@@ -133,7 +133,6 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
                           //   value: analytics.completionRate,
                           //   color: Colors.indigoAccent,
                           // ),
-
                           _buildProgressRow(
                             label: "Weekly",
                             value: analytics.weeklyCompletionRate,
@@ -359,7 +358,7 @@ class _HabitAnalyticsScreenState extends State<HabitAnalyticsScreen> {
       decoration: _modernCardDecoration(),
       child: HabitAnalyticsCalendarWidget(
         rangeStartDay: streakStartedAt,
-        rangeEndDay: lastUpdated,
+        rangeEndDay: streakStartedAt != null ? lastUpdated : null,
         showHeader: true,
       ),
     );

@@ -16,5 +16,6 @@ abstract class HabitRepository {
   Future<List<Habit>> getHabitsByCategory(String category);
   Future<HabitAnalytics?> getHabitAnalytics(String id);
   Future<HabitAnalytics?> updateHabitAnalytics(String id);
+  Future<HabitAnalytics?> checkStreakAndFetchAnalytics(String id);
 }
 

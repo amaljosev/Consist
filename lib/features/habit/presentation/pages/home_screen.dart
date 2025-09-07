@@ -2,7 +2,7 @@ import 'package:consist/core/app_icons.dart';
 import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_bloc.dart';
 import 'package:consist/features/habit/presentation/pages/library/library_screen.dart';
 import 'package:consist/features/habit/presentation/pages/me/me_screen.dart';
-import 'package:consist/features/habit/presentation/pages/progress/progress_screen.dart';
+import 'package:consist/features/habit/presentation/pages/diary/diary_screen.dart';
 import 'package:consist/features/habit/presentation/pages/goals/goals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
     GoalsScreen(),
     LibraryScreen(),
-    ProgressScreen(),
+    DiaryScreen(),
     MeScreen(),
   ];
 
@@ -53,8 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 label: 'Library',
               ),
               BottomNavigationBarItem(
-                icon: Icon(MyFlutterApp.chartLine),
-                label: 'Progress',
+                icon: Icon(Icons.book_outlined),
+                label: 'Diary',
               ),
               BottomNavigationBarItem(
                 icon: Icon(MyFlutterApp.user),

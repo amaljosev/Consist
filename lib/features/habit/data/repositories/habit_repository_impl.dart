@@ -62,4 +62,9 @@ class HabitRepositoryImpl implements HabitRepository {
   Future<HabitAnalytics?> updateHabitAnalytics(String id) async{
     return await db.calculateUpdatedAnalytics(id);
   }
+  
+  @override
+  Future<HabitAnalytics?> checkStreakAndFetchAnalytics(String id) async{
+    return await db.checkStreakAndFetchAnalytics(id);
+  }
 }

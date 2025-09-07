@@ -503,7 +503,7 @@ Future<double> calculateYearlyCompletionRate(String habitId) async {
 
   // update streak
 
-  Future<HabitAnalytics?> checkAndUpdateStreak(String habitId) async {
+  Future<HabitAnalytics?> checkStreakAndFetchAnalytics(String habitId) async {
     try {
       final db = await HabitDatabase.instance.database;
 
@@ -530,6 +530,7 @@ Future<double> calculateYearlyCompletionRate(String habitId) async {
 
       if (lastDay == null) {
         // No last day recorded → no streak yet
+       
         return analytics;
       }
 

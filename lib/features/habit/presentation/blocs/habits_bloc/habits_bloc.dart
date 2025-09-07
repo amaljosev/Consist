@@ -75,7 +75,7 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
           habitId: event.habitId,
           completionDate: todayStr,
           analytics: analytics!,
-          isComplete: true
+          isComplete: true,
         );
 
         emit(HabitCompleteSuccess());
@@ -109,7 +109,9 @@ class HabitsBloc extends Bloc<HabitsEvent, HabitsState> {
       emit(HabitAnalyticsLoading());
       try {
         // Fetch analytics by habitId from repository
-        final analytics = await habitRepository.getHabitAnalytics(event.habitId);
+        final analytics = await habitRepository.checkStreakAndFetchAnalytics(
+          event.habitId,
+        );
 
         emit(HabitAnalyticsLoaded(analytics: analytics));
       } catch (e) {
