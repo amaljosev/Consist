@@ -2,7 +2,7 @@ import 'package:consist/core/app_icons.dart';
 import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_bloc.dart';
 import 'package:consist/features/habit/presentation/pages/library/library_screen.dart';
 import 'package:consist/features/habit/presentation/pages/me/me_screen.dart';
-import 'package:consist/features/habit/presentation/pages/diary/diary_screen.dart';
+import 'package:consist/features/diary/presentation/pages/diary_screen.dart';
 import 'package:consist/features/habit/presentation/pages/goals/goals_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

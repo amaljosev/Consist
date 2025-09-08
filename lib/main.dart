@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:consist/core/app_theme.dart';
+import 'package:consist/features/diary/presentation/blocs/diary/diary_bloc.dart';
 import 'package:consist/features/habit/data/datasources/habit_local_datasource.dart';
 import 'package:consist/features/habit/data/repositories/habit_repository_impl.dart';
 import 'package:consist/features/habit/domain/create_habit/repositories/habit_repository.dart';
@@ -33,10 +34,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => HabitsBloc(habitRepository: habitRepo),
-        ),
-        BlocProvider(create: (context) => CreateBloc()),
+        BlocProvider(create: (_) => HabitsBloc(habitRepository: habitRepo)),
+        BlocProvider(create: (_) => CreateBloc()),
+        BlocProvider(create: (_) => DiaryBloc()..add(LoadDiaryEntries())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
