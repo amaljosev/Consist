@@ -1,3 +1,4 @@
+import 'package:consist/core/utils/converters.dart';
 import 'package:consist/features/diary/domain/entities/diary_entry_model.dart';
 import 'package:flutter/material.dart';
 
@@ -68,9 +69,11 @@ class DiaryEntryCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(String date) {
+    final DateTime newDate =
+        AppConverters.stringToDateTime(date) ?? DateTime.now();
     final now = DateTime.now();
-    final difference = now.difference(date);
+    final difference = now.difference(newDate);
 
     if (difference.inDays == 0) {
       return 'Today';
@@ -79,7 +82,7 @@ class DiaryEntryCard extends StatelessWidget {
     } else if (difference.inDays < 7) {
       return '${difference.inDays} days ago';
     } else {
-      return '${date.day}/${date.month}/${date.year}';
+      return '${newDate.day}/${newDate.month}/${newDate.year}';
     }
   }
 }

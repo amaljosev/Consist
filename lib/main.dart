@@ -1,6 +1,9 @@
 import 'dart:developer';
 
 import 'package:consist/core/app_theme.dart';
+import 'package:consist/features/diary/data/datasources/diary_local_data_source.dart';
+import 'package:consist/features/diary/data/repository/diary_repo_implementation.dart';
+import 'package:consist/features/diary/domain/repository/diary_repository.dart';
 import 'package:consist/features/diary/presentation/blocs/diary/diary_bloc.dart';
 import 'package:consist/features/habit/data/datasources/habit_local_datasource.dart';
 import 'package:consist/features/habit/data/repositories/habit_repository_impl.dart';
@@ -15,28 +18,36 @@ import 'package:sqflite/sqflite.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await resetDatabase();
-
-  // Initialize datasource
+// await resetDatabase();
   final habitLocalDataSource = HabitDatabase.instance;
-
-  // Repository layer
   final HabitRepository habitRepository = HabitRepositoryImpl(
     db: habitLocalDataSource,
   );
-  runApp(MyApp(habitRepo: habitRepository));
+
+  final diaryLocalDataSource = DiaryLocalDataSource();
+  final DiaryRepository diaryRepository = DiaryRepositoryImpl(
+    diaryLocalDataSource,
+  );
+
+  runApp(MyApp(habitRepo: habitRepository, diaryRepo: diaryRepository));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, required this.habitRepo});
+  const MyApp({super.key, required this.habitRepo, required this.diaryRepo});
+
   final HabitRepository habitRepo;
+  final DiaryRepository diaryRepo;
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => HabitsBloc(habitRepository: habitRepo)),
         BlocProvider(create: (_) => CreateBloc()),
-        BlocProvider(create: (_) => DiaryBloc()..add(LoadDiaryEntries())),
+        BlocProvider(
+          create: (_) =>
+              DiaryBloc(repository: diaryRepo)..add(LoadDiaryEntries()),
+        ),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -50,10 +61,12 @@ class MyApp extends StatelessWidget {
 
 Future<void> resetDatabase() async {
   final dbPath = await getDatabasesPath();
-  final path = join(dbPath, 'habits.db');
+  final habitPath = join(dbPath, 'habits.db');
+   final diaryPath = join(dbPath, 'habits.db');
 
   try {
-    await deleteDatabase(path);
+    await deleteDatabase(habitPath);
+    await deleteDatabase(diaryPath);
     log("✅ Database deleted successfully");
   } catch (e) {
     log("❌ Error deleting database: $e");

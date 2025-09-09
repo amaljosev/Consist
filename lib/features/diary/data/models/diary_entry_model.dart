@@ -1,4 +1,4 @@
-
+import 'dart:convert';
 import 'package:consist/features/diary/domain/entities/diary_entry_model.dart';
 
 class DiaryEntryModel extends DiaryEntry {
@@ -10,6 +10,9 @@ class DiaryEntryModel extends DiaryEntry {
     required super.mood,
     required super.content,
     super.imagePath,
+    super.bgColor,
+    super.bgImagePath,
+    super.stickers,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -18,13 +21,18 @@ class DiaryEntryModel extends DiaryEntry {
     return DiaryEntryModel(
       id: map['id'] as String,
       title: map['title'] as String,
-      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
+      date: map['date'] as String? ?? '',
       preview: map['preview'] as String,
       mood: map['mood'] as String,
       content: map['content'] as String,
       imagePath: map['image_path'] as String?,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['created_at'] as int),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(map['updated_at'] as int),
+      bgColor: map['bg_color'] as String?,
+      bgImagePath: map['bg_image_path'] as String?,
+      stickers: map['stickers'] != null
+          ? List<String>.from(jsonDecode(map['stickers']))
+          : null,
+      createdAt: map['created_at'] as String? ?? '',
+      updatedAt: map['updated_at'] as String? ?? '',
     );
   }
 
@@ -32,13 +40,16 @@ class DiaryEntryModel extends DiaryEntry {
     return {
       'id': id,
       'title': title,
-      'date': date.millisecondsSinceEpoch,
+      'date': date, // String
       'preview': preview,
       'mood': mood,
       'content': content,
       'image_path': imagePath,
-      'created_at': createdAt.millisecondsSinceEpoch,
-      'updated_at': updatedAt.millisecondsSinceEpoch,
+      'bg_color': bgColor,
+      'bg_image_path': bgImagePath,
+      'stickers': stickers != null ? jsonEncode(stickers) : null,
+      'created_at': createdAt, // String
+      'updated_at': updatedAt, // String
     };
   }
 
@@ -51,6 +62,9 @@ class DiaryEntryModel extends DiaryEntry {
       mood: entry.mood,
       content: entry.content,
       imagePath: entry.imagePath,
+      bgColor: entry.bgColor,
+      bgImagePath: entry.bgImagePath,
+      stickers: entry.stickers,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -65,6 +79,9 @@ class DiaryEntryModel extends DiaryEntry {
       mood: mood,
       content: content,
       imagePath: imagePath,
+      bgColor: bgColor,
+      bgImagePath: bgImagePath,
+      stickers: stickers,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

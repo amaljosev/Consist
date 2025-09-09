@@ -1,13 +1,17 @@
 class DiaryEntry {
   final String id;
   final String title;
-  final DateTime date;
+  final String date;
   final String preview;
   final String mood;
   final String content;
   final String? imagePath;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final String? bgColor;
+  final String? bgImagePath;
+  final List<String>? stickers;
+
+  final String createdAt;
+  final String updatedAt;
 
   const DiaryEntry({
     required this.id,
@@ -17,6 +21,9 @@ class DiaryEntry {
     required this.mood,
     required this.content,
     this.imagePath,
+    this.bgColor,
+    this.bgImagePath,
+    this.stickers,
     required this.createdAt,
     required this.updatedAt,
   });

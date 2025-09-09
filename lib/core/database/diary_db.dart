@@ -22,28 +22,33 @@ class DiaryDatabase {
       version: 1,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
-      // onDowngrade: onDatabaseDowngradeDelete,
     );
   }
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE diary_entries(
-        id TEXT PRIMARY KEY,
-        title TEXT,
-        content TEXT,
-        preview TEXT,
-        mood TEXT,
-        image_path TEXT,
-        created_at INTEGER,
-        updated_at INTEGER
-      );
-    ''');
+    CREATE TABLE diary_entries(
+      id TEXT PRIMARY KEY,
+      title TEXT,
+      date TEXT,               
+      content TEXT,
+      preview TEXT,
+      mood TEXT,
+      image_path TEXT,
+      bg_color TEXT,
+      bg_image_path TEXT,
+      stickers TEXT,
+      images TEXT,
+      created_at TEXT,          
+      updated_at TEXT          
+    );
+  ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Add migration logic here when schema changes:
-    // if (oldVersion < 2) { await db.execute('ALTER TABLE ...'); }
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE diary_entries ADD COLUMN date INTEGER;');
+    }
   }
 
   Future<void> close() async {

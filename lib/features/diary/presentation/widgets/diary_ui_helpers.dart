@@ -5,7 +5,11 @@ import 'package:flutter/cupertino.dart';
 
 class DiaryUIHelpers {
   /// Date picker
-  static void showDatePicker(BuildContext context, DateTime initialDate, Function(DateTime) onChanged) {
+  static void showDatePicker(
+    BuildContext context,
+    DateTime initialDate,
+    Function(DateTime) onChanged,
+  ) {
     showCupertinoModalPopup(
       context: context,
       builder: (_) => Container(
@@ -32,7 +36,10 @@ class DiaryUIHelpers {
   }
 
   /// Emoji picker
-  static void openEmojiPicker(BuildContext context, Function(String) onSelected) {
+  static void openEmojiPicker(
+    BuildContext context,
+    Function(String) onSelected,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (_) => SafeArea(
@@ -51,7 +58,9 @@ class DiaryUIHelpers {
                 onSelected(emoji);
                 Navigator.pop(context);
               },
-              child: Center(child: Text(emoji, style: const TextStyle(fontSize: 24))),
+              child: Center(
+                child: Text(emoji, style: const TextStyle(fontSize: 24)),
+              ),
             );
           },
         ),
@@ -60,7 +69,10 @@ class DiaryUIHelpers {
   }
 
   /// Color picker
-  static void openColorPicker(BuildContext context, Function(Color) onSelected) {
+  static void openColorPicker(
+    BuildContext context,
+    Function(Color) onSelected,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (_) => SafeArea(
@@ -95,7 +107,10 @@ class DiaryUIHelpers {
   }
 
   /// Background image picker
-  static void openBgImagePicker(BuildContext context, Function(ImageProvider) onSelected) {
+  static void openBgImagePicker(
+    BuildContext context,
+    Function(String) onSelected,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (_) => SafeArea(
@@ -103,16 +118,16 @@ class DiaryUIHelpers {
           padding: const EdgeInsets.all(16),
           itemCount: DiaryItems.bgImages.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+            crossAxisCount: 3,
             mainAxisSpacing: 12,
-            childAspectRatio: 1.5,
+            childAspectRatio: 0.5,
             crossAxisSpacing: 10,
           ),
           itemBuilder: (_, index) {
             final imgPath = DiaryItems.bgImages[index];
             return GestureDetector(
               onTap: () {
-                onSelected(AssetImage(imgPath));
+                onSelected(imgPath);
                 Navigator.pop(context);
               },
               child: ClipRRect(
@@ -127,7 +142,10 @@ class DiaryUIHelpers {
   }
 
   /// Sticker picker
-  static void openStickerPicker(BuildContext context, Function(String) onSelected) {
+  static void openStickerPicker(
+    BuildContext context,
+    Function(String) onSelected,
+  ) {
     showModalBottomSheet(
       context: context,
       builder: (_) => SafeArea(
@@ -146,7 +164,9 @@ class DiaryUIHelpers {
                 onSelected(sticker);
                 Navigator.pop(context);
               },
-              child: Center(child: Text(sticker, style: const TextStyle(fontSize: 28))),
+              child: Center(
+                child: Text(sticker, style: const TextStyle(fontSize: 28)),
+              ),
             );
           },
         ),
@@ -162,6 +182,4 @@ class DiaryUIHelpers {
       TextPosition(offset: controller.text.length),
     );
   }
-
-  
 }

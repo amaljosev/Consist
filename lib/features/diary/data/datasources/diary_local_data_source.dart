@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:consist/core/database/diary_db.dart';
 import 'package:sqflite/sqflite.dart';
 import '../models/diary_entry_model.dart';
@@ -7,40 +9,83 @@ class DiaryLocalDataSource {
   static const table = 'diary_entries';
 
   Future<void> insertEntry(DiaryEntryModel entry) async {
-    final db = await _dbProvider.database;
-    await db.insert(table, entry.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    try {
+      final db = await _dbProvider.database;
+      await db.insert(
+        table,
+        entry.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } catch (e, st) {
+      log('insertEntry error: $e', stackTrace: st);
+      rethrow; // optionally rethrow if you want upper layers to handle it
+    }
   }
 
   Future<List<DiaryEntryModel>> getAllEntries() async {
-    final db = await _dbProvider.database;
-    final maps = await db.query(table, orderBy: 'created_at DESC');
-    return maps.map((m) => DiaryEntryModel.fromMap(m)).toList();
+    try {
+      final db = await _dbProvider.database;
+      final maps = await db.query(table, orderBy: 'created_at DESC');
+      return maps.map((m) => DiaryEntryModel.fromMap(m)).toList();
+    } catch (e, st) {
+      log('getAllEntries error: $e', stackTrace: st);
+      return []; // return empty list on failure
+    }
   }
 
   Future<DiaryEntryModel?> getEntryById(String id) async {
-    final db = await _dbProvider.database;
-    final maps = await db.query(table, where: 'id = ?', whereArgs: [id]);
-    if (maps.isEmpty) return null;
-    return DiaryEntryModel.fromMap(maps.first);
+    try {
+      final db = await _dbProvider.database;
+      final maps = await db.query(table, where: 'id = ?', whereArgs: [id]);
+      if (maps.isEmpty) return null;
+      return DiaryEntryModel.fromMap(maps.first);
+    } catch (e, st) {
+      log('getEntryById error: $e', stackTrace: st);
+      return null;
+    }
   }
 
   Future<int> updateEntry(DiaryEntryModel entry) async {
-    final db = await _dbProvider.database;
-    return db.update(table, entry.toMap(), where: 'id = ?', whereArgs: [entry.id]);
+    try {
+      final db = await _dbProvider.database;
+      return await db.update(
+        table,
+        entry.toMap(),
+        where: 'id = ?',
+        whereArgs: [entry.id],
+      );
+    } catch (e, st) {
+      log('updateEntry error: $e', stackTrace: st);
+      return 0; // 0 means no rows affected
+    }
   }
 
   Future<int> deleteEntry(String id) async {
-    final db = await _dbProvider.database;
-    return db.delete(table, where: 'id = ?', whereArgs: [id]);
+    try {
+      final db = await _dbProvider.database;
+      return await db.delete(
+        table,
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    } catch (e, st) {
+      log('deleteEntry error: $e', stackTrace: st);
+      return 0;
+    }
   }
 
   Future<List<DiaryEntryModel>> search(String query) async {
-    final db = await _dbProvider.database;
-    final maps = await db.query(
-      table,
-      where: 'title LIKE ? OR content LIKE ? OR preview LIKE ?',
-      whereArgs: ['%$query%', '%$query%', '%$query%'],
-    );
-    return maps.map((m) => DiaryEntryModel.fromMap(m)).toList();
+    try {
+      final db = await _dbProvider.database;
+      final maps = await db.query(
+        table,
+        where: 'title LIKE ? OR content LIKE ? OR preview LIKE ?',
+        whereArgs: ['%$query%', '%$query%', '%$query%'],
+      );
+      return maps.map((m) => DiaryEntryModel.fromMap(m)).toList();
+    } catch (e, st) {
+      log('search error: $e', stackTrace: st);
+      return [];
+    }
   }
 }

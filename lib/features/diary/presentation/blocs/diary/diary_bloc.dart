@@ -1,6 +1,7 @@
-import 'dart:typed_data';
+import 'dart:developer';
 
 import 'package:consist/features/diary/domain/entities/diary_entry_model.dart';
+import 'package:consist/features/diary/domain/repository/diary_repository.dart'; // <-- new
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,28 +12,48 @@ part 'diary_event.dart';
 part 'diary_state.dart';
 
 class DiaryBloc extends Bloc<DiaryEvent, DiaryState> {
-  DiaryBloc() : super(const DiaryState()) {
+  final DiaryRepository repository; // <-- new dependency
+
+  DiaryBloc({required this.repository}) : super(const DiaryState()) {
+    // existing handlers
     on<LoadDiaryEntries>(_onLoadEntries);
     on<UpdateScrollOffset>(_onUpdateScrollOffset);
     on<UpdateDominantColor>(_onUpdateDominantColor);
-    
+
+    // new handlers
+    on<FetchAllEntries>(_onFetchAllEntries);
+    on<FetchEntryById>(_onFetchEntryById);
+    on<AddDiaryEntry>(_onAddEntry);
+    on<UpdateDiaryEntry>(_onUpdateEntry);
+    on<DeleteDiaryEntry>(_onDeleteEntry);
+    on<SearchDiaryEntries>(_onSearchEntries);
   }
 
+  // existing methods (unchanged)
   Future<void> _onLoadEntries(
-      LoadDiaryEntries event, Emitter<DiaryState> emit) async {
-    // Here you can load from database or API
-    emit(state.copyWith(entries: [
-      // Add your hardcoded entries or fetch from DB
-    ]));
+    LoadDiaryEntries event,
+    Emitter<DiaryState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true, errorMessage: null));
+    try {
+      final entries = await repository.getAllEntries();
+      emit(state.copyWith(entries: entries, isLoading: false));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
   }
 
   void _onUpdateScrollOffset(
-      UpdateScrollOffset event, Emitter<DiaryState> emit) {
+    UpdateScrollOffset event,
+    Emitter<DiaryState> emit,
+  ) {
     emit(state.copyWith(scrollOffset: event.offset));
   }
 
   Future<void> _onUpdateDominantColor(
-      UpdateDominantColor event, Emitter<DiaryState> emit) async {
+    UpdateDominantColor event,
+    Emitter<DiaryState> emit,
+  ) async {
     try {
       final ByteData data = await rootBundle.load(event.imagePath);
       final Uint8List bytes = Uint8List.fromList(data.buffer.asUint8List());
@@ -59,8 +80,9 @@ class DiaryBloc extends Bloc<DiaryEvent, DiaryState> {
       }
 
       if (colorCounts.isNotEmpty) {
-        final mostFrequentColor =
-            colorCounts.entries.reduce((a, b) => a.value > b.value ? a : b).key;
+        final mostFrequentColor = colorCounts.entries
+            .reduce((a, b) => a.value > b.value ? a : b)
+            .key;
         emit(state.copyWith(dominantColor: mostFrequentColor));
       }
     } catch (e) {
@@ -71,7 +93,93 @@ class DiaryBloc extends Bloc<DiaryEvent, DiaryState> {
   Color _groupSimilarColor(Color color) {
     final hsl = HSLColor.fromColor(color);
     final groupedHue = (hsl.hue / 30).round() * 30.0;
-    return HSLColor.fromAHSL(hsl.alpha, groupedHue, hsl.saturation, hsl.lightness)
-        .toColor();
+    return HSLColor.fromAHSL(
+      hsl.alpha,
+      groupedHue,
+      hsl.saturation,
+      hsl.lightness,
+    ).toColor();
+  }
+
+  // --------------------------------------------------------------------------
+  // new methods for CRUD and search
+  // --------------------------------------------------------------------------
+  Future<void> _onFetchAllEntries(
+    FetchAllEntries event,
+    Emitter<DiaryState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final entries = await repository.getAllEntries();
+      emit(state.copyWith(entries: entries, isLoading: false));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> _onFetchEntryById(
+    FetchEntryById event,
+    Emitter<DiaryState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final entry = await repository.getEntryById(event.id);
+      if (entry != null) {
+        emit(state.copyWith(entries: [entry], isLoading: false));
+      } else {
+        emit(state.copyWith(isLoading: false));
+      }
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+    }
+  }
+
+  Future<void> _onAddEntry(
+    AddDiaryEntry event,
+    Emitter<DiaryState> emit,
+  ) async {
+    try {
+      await repository.addEntry(event.entry);
+      add(FetchAllEntries()); // refresh
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  Future<void> _onUpdateEntry(
+    UpdateDiaryEntry event,
+    Emitter<DiaryState> emit,
+  ) async {
+    try {
+      await repository.updateEntry(event.entry);
+      add(FetchAllEntries());
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  Future<void> _onDeleteEntry(
+    DeleteDiaryEntry event,
+    Emitter<DiaryState> emit,
+  ) async {
+    try {
+      await repository.deleteEntry(event.id);
+      add(FetchAllEntries());
+    } catch (e) {
+      log(e.toString());
+    }
+  }
+
+  Future<void> _onSearchEntries(
+    SearchDiaryEntries event,
+    Emitter<DiaryState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+    try {
+      final entries = await repository.searchEntries(event.query);
+      emit(state.copyWith(entries: entries, isLoading: false));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+    }
   }
 }

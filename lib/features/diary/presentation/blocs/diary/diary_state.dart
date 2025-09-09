@@ -1,31 +1,45 @@
 part of 'diary_bloc.dart';
 
+
 class DiaryState extends Equatable {
   final List<DiaryEntry> entries;
-  final Color dominantColor;
   final double scrollOffset;
+  final Color dominantColor;
+
+  // New fields:
+  final bool isLoading;
+  final String? errorMessage;
 
   const DiaryState({
     this.entries = const [],
-    this.dominantColor = Colors.grey,
     this.scrollOffset = 0.0,
+    this.dominantColor = Colors.grey,
+    this.isLoading = false,
+    this.errorMessage,
   });
 
   DiaryState copyWith({
     List<DiaryEntry>? entries,
-    Color? dominantColor,
     double? scrollOffset,
+    Color? dominantColor,
+    bool? isLoading,
+    String? errorMessage,
   }) {
     return DiaryState(
       entries: entries ?? this.entries,
-      dominantColor: dominantColor ?? this.dominantColor,
       scrollOffset: scrollOffset ?? this.scrollOffset,
+      dominantColor: dominantColor ?? this.dominantColor,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [entries, dominantColor, scrollOffset];
+  List<Object?> get props =>
+      [entries, scrollOffset, dominantColor, isLoading, errorMessage];
 }
+
+
 
 class DiaryEntryState extends Equatable {
   final String title;
@@ -69,3 +83,4 @@ class DiaryEntryState extends Equatable {
   @override
   List<Object?> get props => [title, description, mood, bgColor, bgImage, photo, stickers];
 }
+

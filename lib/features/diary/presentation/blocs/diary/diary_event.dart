@@ -25,3 +25,39 @@ class UpdateDominantColor extends DiaryEvent {
   List<Object?> get props => [imagePath];
 }
 
+class FetchAllEntries extends DiaryEvent {}
+
+class FetchEntryById extends DiaryEvent {
+  final String id;
+  const FetchEntryById(this.id);
+  @override
+  List<Object?> get props => [id];
+}
+
+class AddDiaryEntry extends DiaryEvent {
+  final DiaryEntry entry;
+  const AddDiaryEntry(this.entry);
+  @override
+  List<Object?> get props => [entry];
+}
+
+class UpdateDiaryEntry extends DiaryEvent {
+  final DiaryEntry entry;
+  const UpdateDiaryEntry(this.entry);
+  @override
+  List<Object?> get props => [entry];
+}
+
+class DeleteDiaryEntry extends DiaryEvent {
+  final String id;
+  const DeleteDiaryEntry(this.id);
+  @override
+  List<Object?> get props => [id];
+}
+
+class SearchDiaryEntries extends DiaryEvent {
+  final String query;
+  const SearchDiaryEntries(this.query);
+  @override
+  List<Object?> get props => [query];
+}

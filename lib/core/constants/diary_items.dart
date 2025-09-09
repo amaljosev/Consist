@@ -40,11 +40,29 @@ class DiaryItems {
   ];
 
   static const List<String> bgImages = [
-    'assets/img/dashboard_dark.png',
-    'assets/img/dashboard_light.png',
-    'assets/img/habit_slider_01.png',
-    'assets/img/habit_slider_02.png',
-  ];
+  'assets/img/diary_bg/1.png',
+  'assets/img/diary_bg/2.png',
+  'assets/img/diary_bg/3.png',
+  'assets/img/diary_bg/4.png',
+  'assets/img/diary_bg/5.png',
+  'assets/img/diary_bg/6.png',
+  'assets/img/diary_bg/7.png',
+  'assets/img/diary_bg/8.png',
+  'assets/img/diary_bg/9.png',
+  'assets/img/diary_bg/10.png',
+  'assets/img/diary_bg/11.png',
+  'assets/img/diary_bg/12.png',
+  'assets/img/diary_bg/13.png',
+  'assets/img/diary_bg/14.png',
+  'assets/img/diary_bg/15.png',
+  'assets/img/diary_bg/16.png',
+  'assets/img/diary_bg/17.png',
+  'assets/img/diary_bg/18.png',
+  'assets/img/diary_bg/19.png',
+  'assets/img/diary_bg/20.png',
+  'assets/img/diary_bg/21.png',
+];
+
 
   static const List<String> emojis = [
     // Emotions & Feelings

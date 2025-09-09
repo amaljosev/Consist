@@ -41,19 +41,11 @@ class BgColorChanged extends DiaryEntryEvent {
 }
 
 class BgImageChanged extends DiaryEntryEvent {
-  final ImageProvider image;
+  final String image;
   const BgImageChanged(this.image);
 
   @override
   List<Object?> get props => [image];
-}
-
-class PhotoAdded extends DiaryEntryEvent {
-  final ImageProvider photo;
-  const PhotoAdded(this.photo);
-
-  @override
-  List<Object?> get props => [photo];
 }
 
 class StickerAdded extends DiaryEntryEvent {
@@ -67,6 +59,7 @@ class StickerAdded extends DiaryEntryEvent {
 class BulletInserted extends DiaryEntryEvent {}
 
 class SaveEntry extends DiaryEntryEvent {}
+
 class DateChanged extends DiaryEntryEvent {
   final DateTime date;
   const DateChanged(this.date);
@@ -84,6 +77,7 @@ class UpdateStickerPosition extends DiaryEntryEvent {
   @override
   List<Object?> get props => [id, x, y];
 }
+
 class UpdateStickerSize extends DiaryEntryEvent {
   final String id;
   final double size;
@@ -99,4 +93,40 @@ class RemoveSticker extends DiaryEntryEvent {
 
   @override
   List<Object?> get props => [id];
+}
+
+// New image events
+class ImageAdded extends DiaryEntryEvent {
+  final String imagePath;
+  const ImageAdded(this.imagePath);
+
+  @override
+  List<Object?> get props => [imagePath];
+}
+
+class UpdateImagePosition extends DiaryEntryEvent {
+  final String imageId;
+  final double x;
+  final double y;
+  const UpdateImagePosition(this.imageId, this.x, this.y);
+
+  @override
+  List<Object?> get props => [imageId, x, y];
+}
+
+class UpdateImageSize extends DiaryEntryEvent {
+  final String imageId;
+  final double scale;
+  const UpdateImageSize(this.imageId, this.scale);
+
+  @override
+  List<Object?> get props => [imageId, scale];
+}
+
+class RemoveImage extends DiaryEntryEvent {
+  final String imageId;
+  const RemoveImage(this.imageId);
+
+  @override
+  List<Object?> get props => [imageId];
 }

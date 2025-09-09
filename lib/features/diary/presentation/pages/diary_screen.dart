@@ -14,12 +14,13 @@ class DiaryScreen extends StatefulWidget {
 
 class _DiaryScreenState extends State<DiaryScreen> {
   final ScrollController _scrollController = ScrollController();
-
   final String currentImagePath = 'assets/img/diary.png';
+
   @override
   void initState() {
-    context.read<DiaryBloc>().add(UpdateDominantColor(currentImagePath));
     super.initState();
+    context.read<DiaryBloc>().add(UpdateDominantColor(currentImagePath));
+    context.read<DiaryBloc>().add(LoadDiaryEntries());
   }
 
   @override
@@ -32,6 +33,26 @@ class _DiaryScreenState extends State<DiaryScreen> {
           bloc.add(UpdateScrollOffset(_scrollController.offset));
         });
 
+        // Handle empty/error/loading states
+        if (state.isLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (state.errorMessage != null) {
+          return Scaffold(
+            body: Center(
+              child: Text(
+                'Failed to load diary entries.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
+
+        // Default / Loaded
+        final entries = state.entries; // from base state or DiaryLoaded
         double blurIntensity = (state.scrollOffset / 100).clamp(0.0, 10.0);
         double opacity = (1 - state.scrollOffset / 300).clamp(0.0, 1.0);
         double titleOpacity = (1 - state.scrollOffset / 150).clamp(0.0, 1.0);
@@ -75,8 +96,8 @@ class _DiaryScreenState extends State<DiaryScreen> {
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
                               colors: [
-                                state.dominantColor.withOpacity(0.8),
-                                state.dominantColor.withOpacity(0.4),
+                                state.dominantColor.withValues(alpha: 0.8),
+                                state.dominantColor.withValues(alpha: 0.4),
                                 Colors.transparent,
                               ],
                               stops: const [0.0, 0.5, 1.0],
@@ -100,9 +121,9 @@ class _DiaryScreenState extends State<DiaryScreen> {
                               Opacity(
                                 opacity: titleOpacity,
                                 child: Text(
-                                  '${state.entries.length} entries',
+                                  '${entries.length} entries',
                                   style: TextStyle(
-                                    color: textColor.withOpacity(0.8),
+                                    color: textColor.withValues(alpha: 0.8),
                                     fontSize: 16,
                                   ),
                                 ),
@@ -121,19 +142,26 @@ class _DiaryScreenState extends State<DiaryScreen> {
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  final entry = state.entries[index];
+                  final entry = entries[index];
                   return DiaryEntryCard(
                     entry: entry,
-                    backgroundColor: state.dominantColor.withOpacity(0.1),
+                    backgroundColor: state.dominantColor.withValues(alpha: 0.1),
                   );
-                }, childCount: state.entries.length),
+                }, childCount: entries.length),
               ),
             ],
           ),
           floatingActionButton: FloatingActionButton(
-            onPressed: () => Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => DiaryEntryScreen())),
+            onPressed: () async {
+              // navigate to add-entry screen, then refresh
+              final result = await Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const DiaryEntryScreen()),
+              );
+              if (result == true) {
+                // Reload entries after adding new one
+                context.read<DiaryBloc>().add(LoadDiaryEntries());
+              }
+            },
             backgroundColor: state.dominantColor,
             child: Icon(Icons.add, color: textColor),
           ),
