@@ -9,6 +9,8 @@ class DiaryEntryState extends Equatable {
   final List<StickerModel> stickers;
   final List<DiaryImage> images;
   final DateTime date;
+  final String? selectedStickerId;
+  final String? selectedImageId;
 
   DiaryEntryState({
     this.title = '',
@@ -18,6 +20,8 @@ class DiaryEntryState extends Equatable {
     this.bgImage = '',
     this.stickers = const [],
     this.images = const [],
+    this.selectedStickerId,
+    this.selectedImageId,
     DateTime? date,
   }) : date = date ?? DateTime.now();
 
@@ -30,6 +34,8 @@ class DiaryEntryState extends Equatable {
     List<StickerModel>? stickers,
     List<DiaryImage>? images,
     DateTime? date,
+    String? selectedStickerId,
+    String? selectedImageId,
   }) {
     return DiaryEntryState(
       title: title ?? this.title,
@@ -40,6 +46,8 @@ class DiaryEntryState extends Equatable {
       stickers: stickers ?? this.stickers,
       images: images ?? this.images,
       date: date ?? this.date,
+      selectedStickerId: selectedStickerId ?? this.selectedStickerId,
+      selectedImageId: selectedImageId ?? this.selectedImageId,
     );
   }
 
@@ -53,6 +61,8 @@ class DiaryEntryState extends Equatable {
     stickers,
     images,
     date,
+    selectedStickerId,
+    selectedImageId,
   ];
 }
 

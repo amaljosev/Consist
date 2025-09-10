@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:consist/core/utils/converters.dart';
 import 'package:consist/features/diary/data/models/diary_entry_model.dart';
 import 'package:consist/features/diary/domain/entities/sticker_model.dart';
@@ -45,10 +44,13 @@ class DiaryPreviewScreen extends StatelessWidget {
       }
     }
 
+    // Calculate the offset for the content area (after title, mood, and date)
+    final contentTopOffset = 160.0; // Approximate height of header content
+
     return Scaffold(
       body: Stack(
         children: [
-          // ---------- Background ----------
+          // ---------- Background (fixed) ----------
           if (entry.bgImagePath != null && entry.bgImagePath!.isNotEmpty)
             // If bgImagePath refers to an asset
             Image.asset(
@@ -62,59 +64,88 @@ class DiaryPreviewScreen extends StatelessWidget {
           else
             Container(color: Colors.white),
 
-          // ---------- Stickers ----------
-          ...stickers.map(
-            (s) => Positioned(
-              left: s.x,
-              top: s.y,
-              child: Text(s.sticker, style: TextStyle(fontSize: s.size)),
-            ),
-          ),
+          // ---------- Scrollable Content ----------
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              // Set a minimum height to ensure scrollability
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
+              ),
+              child: Stack(
+                children: [
+                  // ---------- Text Content ----------
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                       SafeArea(
+                        child: AppBar(
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                        ),
+                      ),
+                      Text(
+                        entry.title,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(entry.mood, style: const TextStyle(fontSize: 40)),
+                      const SizedBox(height: 8),
+                      Text(
+                        _formatDate(entry.date),
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        entry.content,
+                        style: const TextStyle(fontSize: 18, height: 1.5),
+                      ),
+                      const SizedBox(height: 120), // padding for floating buttons
+                    ],
+                  ),
 
-          // ---------- User-added images ----------
-          ...images.map(
-            (img) => Positioned(
-              left: img.x,
-              top: img.y,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.file(
-                  File(img.imagePath),
-                  width: img.width,
-                  height: img.height,
-                  fit: BoxFit.cover,
-                ),
+                  // ---------- Stickers (scroll with content, adjusted position) ----------
+                  ...stickers.map(
+                    (s) => Positioned(
+                      left: s.x,
+                      top: s.y + contentTopOffset, // Adjust for header offset
+                      child: Text(s.sticker, style: TextStyle(fontSize: s.size)),
+                    ),
+                  ),
+
+                  // ---------- User-added images (scroll with content, adjusted position) ----------
+                  ...images.map(
+                    (img) => Positioned(
+                      left: img.x,
+                      top: img.y + contentTopOffset, // Adjust for header offset
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          File(img.imagePath),
+                          width: img.width,
+                          height: img.height,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
 
-          // ---------- Scrollable Text Content ----------
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+          // ---------- Fixed App Bar (stays at top) ----------
+           Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
             child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppBar(
-                    title: Text(entry.title),
-                    centerTitle: true,
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(entry.mood, style: const TextStyle(fontSize: 40)),
-                  const SizedBox(height: 8),
-                  Text(
-                    _formatDate(entry.date),
-                    style: TextStyle(color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    entry.content,
-                    style: const TextStyle(fontSize: 18, height: 1.5),
-                  ),
-                  const SizedBox(height: 120), // padding for floating buttons
-                ],
+              child: AppBar(
+                backgroundColor: Colors.transparent,
+                foregroundColor: Colors.black,
+                elevation: 0,
               ),
             ),
           ),

@@ -124,5 +124,23 @@ class DiaryEntryBloc extends Bloc<DiaryEntryEvent, DiaryEntryState> {
           .toList();
       emit(state.copyWith(images: updatedImages));
     });
+    on<SelectSticker>((event, emit) {
+  emit(state.copyWith(
+    selectedStickerId: event.id,
+    selectedImageId: null,
+  ));
+});
+on<SelectImage>((event, emit) {
+  emit(state.copyWith(
+    selectedImageId: event.id,
+    selectedStickerId: null, 
+  ));
+});
+on<DeselectAll>((event, emit) {
+  emit(state.copyWith(
+    selectedStickerId: null,
+    selectedImageId: null,
+  ));
+});
   }
 }

@@ -33,6 +33,7 @@ class DiaryEntryForm extends StatefulWidget {
 class _DiaryEntryFormState extends State<DiaryEntryForm> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   late DiaryEntryBloc _bloc;
 
   @override
@@ -50,6 +51,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -57,7 +59,10 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
   Widget build(BuildContext context) {
     return BlocBuilder<DiaryEntryBloc, DiaryEntryState>(
       builder: (context, state) {
-        return Scaffold(body: _buildBackground(state, context));
+        return Scaffold(
+          body: _buildBackground(state, context),
+          floatingActionButton: _buildFloatingActionButton(state, context),
+        );
       },
     );
   }
@@ -207,84 +212,161 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
 
   Widget _buildDescriptionSection(DiaryEntryState state, BuildContext context) {
     return Expanded(
-      child: Stack(
-        children: [
-          _buildDescriptionTextField(context),
-          ..._buildStickers(state),
-          ..._buildImages(state),
-        ],
+      child: GestureDetector(
+        onTap: () {
+          // Deselect all when tapping outside
+          _bloc.add(DeselectAll());
+        },
+        behavior: HitTestBehavior.opaque,
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: Container(
+            height: 2000,
+            child: Stack(
+              children: [
+                // Text field at the top with its own gesture detector
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () {}, // Empty handler to prevent parent from firing
+                    child: TextFormField(
+                      onChanged: (value) => _bloc.add(DescriptionChanged(value)),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'What\'s on your mind?',
+                      ),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        fontSize: 20,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                      controller: _descriptionController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                    ),
+                  ),
+                ),
+                
+                // Stickers and images positioned absolutely but scrollable
+                ..._buildStickers(state),
+                ..._buildImages(state),
+              ],
+            ),
+          ),
+        ),
       ),
-    );
-  }
-
-  Widget _buildDescriptionTextField(BuildContext context) {
-    return TextFormField(
-      onChanged: (value) => _bloc.add(DescriptionChanged(value)),
-      decoration: const InputDecoration(
-        border: InputBorder.none,
-        hintText: 'What\'s on your mind?',
-      ),
-      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-        fontSize: 20,
-        color: Theme.of(context).colorScheme.onSurface,
-      ),
-      controller: _descriptionController,
-      keyboardType: TextInputType.multiline,
-      maxLines: null,
-      expands: true,
     );
   }
 
   List<Widget> _buildStickers(DiaryEntryState state) {
-    return state.stickers.map((sticker) => _buildSticker(sticker)).toList();
+    return state.stickers.map((sticker) => _buildSticker(sticker, state)).toList();
   }
 
-  Widget _buildSticker(StickerModel sticker) {
+  Widget _buildSticker(StickerModel sticker, DiaryEntryState state) {
+    final isSelected = state.selectedStickerId == sticker.id;
+    
     return Positioned(
       left: sticker.x,
       top: sticker.y,
       child: GestureDetector(
+        onTap: () {
+          // Select this sticker on tap
+          _bloc.add(SelectSticker(sticker.id));
+        },
+        onTapDown: (_) {}, // Prevent background tap
         onDoubleTap: () => _showStickerMenu(sticker),
         onLongPress: () => _showStickerMenu(sticker),
-
-        onScaleUpdate: (details) {
+        onScaleUpdate: isSelected ? (details) {
+          // Only allow movement if selected
           final newX = (sticker.x + details.focalPointDelta.dx).toDouble();
           final newY = (sticker.y + details.focalPointDelta.dy).toDouble();
           _bloc.add(UpdateStickerPosition(sticker.id, newX, newY));
           final scaledSize = (sticker.size * details.scale).clamp(12.0, 200.0);
           _bloc.add(UpdateStickerSize(sticker.id, scaledSize.toDouble()));
-        },
-        child: Text(sticker.sticker, style: TextStyle(fontSize: sticker.size)),
+        } : null,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          decoration: isSelected
+              ? BoxDecoration(
+                  border: Border.all(
+                    color: Colors.blue,
+                    width: 2,
+                    style: BorderStyle.solid,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                )
+              : null,
+          padding: const EdgeInsets.all(4),
+          child: Text(sticker.sticker, style: TextStyle(fontSize: sticker.size)),
+        ),
       ),
     );
   }
 
   List<Widget> _buildImages(DiaryEntryState state) {
-    return state.images.map((image) => _buildImage(image)).toList();
+    return state.images.map((image) => _buildImage(image, state)).toList();
   }
 
-  Widget _buildImage(DiaryImage image) {
+  Widget _buildImage(DiaryImage image, DiaryEntryState state) {
+    final isSelected = state.selectedImageId == image.id;
+    
     return Positioned(
       left: image.x,
       top: image.y,
       child: GestureDetector(
+        onTap: () {
+          // Select this image on tap
+          _bloc.add(SelectImage(image.id));
+        },
+        onTapDown: (_) {}, // Prevent background tap
         onDoubleTap: () => _showImageMenu(image),
         onLongPress: () => _showImageMenu(image),
-
-        onScaleUpdate: (details) {
+        onScaleUpdate: isSelected ? (details) {
+          // Only allow movement if selected
           final newX = (image.x + details.focalPointDelta.dx).toDouble();
           final newY = (image.y + details.focalPointDelta.dy).toDouble();
           _bloc.add(UpdateImagePosition(image.id, newX, newY));
           final newScale = (image.scale * details.scale).clamp(0.5, 3.0);
           _bloc.add(UpdateImageSize(image.id, newScale.toDouble()));
-        },
-        child: Transform.scale(
-          scale: image.scale,
-          child: Image.file(
-            File(image.imagePath),
-            width: image.width,
-            height: image.height,
-            fit: BoxFit.cover,
+        } : null,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          decoration: isSelected
+              ? BoxDecoration(
+                  border: Border.all(
+                    color: Colors.blue,
+                    width: 2,
+                    style: BorderStyle.solid,
+                  ),
+                  borderRadius: BorderRadius.circular(4),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                )
+              : null,
+          padding: const EdgeInsets.all(4),
+          child: Transform.scale(
+            scale: image.scale,
+            child: Image.file(
+              File(image.imagePath),
+              width: image.width,
+              height: image.height,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),
@@ -336,6 +418,25 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
     );
   }
 
+  Widget _buildFloatingActionButton(DiaryEntryState state, BuildContext context) {
+    final hasSelection = state.selectedStickerId != null || state.selectedImageId != null;
+    
+    return hasSelection
+        ? FloatingActionButton(
+            onPressed: () {
+              _bloc.add(DeselectAll());
+            },
+            child: const Icon(Icons.clear),
+            backgroundColor: Colors.red,
+          )
+        : FloatingActionButton(
+            onPressed: () {
+              _showQuickActionsMenu(context);
+            },
+            child: const Icon(Icons.add),
+          );
+  }
+
   Widget _buildSaveButton(BuildContext context, DiaryEntryState state) {
     return SizedBox(
       width: double.infinity,
@@ -368,7 +469,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
           Navigator.pop(context, true);
         },
         child: Text(widget.entry != null ? 'Update diary' : 'Save'),
-      ),
+      )
     );
   }
 
@@ -376,13 +477,13 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
     return BoxDecoration(
       gradient: LinearGradient(
         colors: [
-          Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-          Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+          Theme.of(context).colorScheme.primary.withOpacity(0.1),
+          Theme.of(context).colorScheme.primary.withOpacity(0.05),
         ],
       ),
       borderRadius: BorderRadius.circular(radius),
       border: Border.all(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
         width: 1.5,
       ),
     );
@@ -391,7 +492,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
   BoxDecoration _buildActionButtonsDecoration(BuildContext context) {
     return BoxDecoration(
       borderRadius: BorderRadius.circular(20),
-      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
+      color: Theme.of(context).colorScheme.surface.withOpacity(0.7),
       boxShadow: const [
         BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
       ],
@@ -410,9 +511,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           foregroundColor: Theme.of(context).colorScheme.primary,
-          backgroundColor: Theme.of(
-            context,
-          ).colorScheme.surface.withValues(alpha: 0.9),
+          backgroundColor: Theme.of(context).colorScheme.surface.withOpacity(0.9),
           elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
@@ -426,9 +525,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
             const SizedBox(width: 6),
             Text(
               label,
-              style: Theme.of(
-                context,
-              ).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -484,6 +581,43 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
     }
   }
 
+  void _showQuickActionsMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo),
+              title: const Text('Add Photo'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _onPhotoPressed();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.emoji_emotions),
+              title: const Text('Add Sticker'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _onStickerPressed();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.format_list_bulleted),
+              title: const Text('Insert Bullet'),
+              onTap: () {
+                Navigator.pop(ctx);
+                _onBulletPressed();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildStickerMenu(BuildContext ctx) {
     return SafeArea(
       child: Column(
@@ -530,8 +664,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
             onTap: () => Navigator.pop(ctx, 'smaller'),
           ),
         ],
-      ),
-    );
+      ));
   }
 
   void _onPhotoPressed() {
@@ -548,9 +681,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
       }
     }
   }

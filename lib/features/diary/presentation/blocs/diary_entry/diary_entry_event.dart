@@ -136,3 +136,21 @@ class RemoveImage extends DiaryEntryEvent {
   @override
   List<Object?> get props => [imageId];
 }
+
+class SelectSticker extends DiaryEntryEvent {
+  final String id;
+  const SelectSticker(this.id);
+
+  @override
+  List<Object?> get props => [id];
+}
+
+class SelectImage extends DiaryEntryEvent {
+  final String id;
+  const SelectImage(this.id);
+
+  @override
+  List<Object?> get props => [id];
+}
+
+class DeselectAll extends DiaryEntryEvent {}
