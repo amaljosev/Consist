@@ -1,11 +1,10 @@
-
-import 'package:consist/features/diary/domain/entities/diary_entry_model.dart';
+import 'package:consist/features/diary/data/models/diary_entry_model.dart';
 
 abstract class DiaryRepository {
-  Future<List<DiaryEntry>> getAllEntries();
-  Future<DiaryEntry?> getEntryById(String id);
-  Future<void> addEntry(DiaryEntry entry);
-  Future<void> updateEntry(DiaryEntry entry);
+  Future<List<DiaryEntryModel>> getAllEntries();
+  Future<DiaryEntryModel?> getEntryById(String id);
+  Future<void> addEntry(DiaryEntryModel entry);
+  Future<void> updateEntry(DiaryEntryModel entry);
   Future<void> deleteEntry(String id);
-  Future<List<DiaryEntry>> searchEntries(String query);
+  Future<List<DiaryEntryModel>> searchEntries(String query);
 }

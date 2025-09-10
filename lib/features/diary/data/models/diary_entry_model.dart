@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:consist/features/diary/domain/entities/diary_entry_model.dart';
 
 class DiaryEntryModel extends DiaryEntry {
@@ -12,7 +11,8 @@ class DiaryEntryModel extends DiaryEntry {
     super.imagePath,
     super.bgColor,
     super.bgImagePath,
-    super.stickers,
+    super.stickersJson,
+    super.imagesJson,
     required super.createdAt,
     required super.updatedAt,
   });
@@ -28,9 +28,8 @@ class DiaryEntryModel extends DiaryEntry {
       imagePath: map['image_path'] as String?,
       bgColor: map['bg_color'] as String?,
       bgImagePath: map['bg_image_path'] as String?,
-      stickers: map['stickers'] != null
-          ? List<String>.from(jsonDecode(map['stickers']))
-          : null,
+      stickersJson: map['stickers'],
+      imagesJson: map['images'],
       createdAt: map['created_at'] as String? ?? '',
       updatedAt: map['updated_at'] as String? ?? '',
     );
@@ -40,19 +39,19 @@ class DiaryEntryModel extends DiaryEntry {
     return {
       'id': id,
       'title': title,
-      'date': date, // String
+      'date': date,
       'preview': preview,
       'mood': mood,
       'content': content,
       'image_path': imagePath,
       'bg_color': bgColor,
       'bg_image_path': bgImagePath,
-      'stickers': stickers != null ? jsonEncode(stickers) : null,
-      'created_at': createdAt, // String
-      'updated_at': updatedAt, // String
+      'stickers': stickersJson,
+      'images': imagesJson,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
-
   factory DiaryEntryModel.fromEntity(DiaryEntry entry) {
     return DiaryEntryModel(
       id: entry.id,
@@ -64,7 +63,7 @@ class DiaryEntryModel extends DiaryEntry {
       imagePath: entry.imagePath,
       bgColor: entry.bgColor,
       bgImagePath: entry.bgImagePath,
-      stickers: entry.stickers,
+      stickersJson: entry.stickersJson,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -81,7 +80,7 @@ class DiaryEntryModel extends DiaryEntry {
       imagePath: imagePath,
       bgColor: bgColor,
       bgImagePath: bgImagePath,
-      stickers: stickers,
+      stickersJson: stickersJson,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

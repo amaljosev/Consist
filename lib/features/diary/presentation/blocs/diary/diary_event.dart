@@ -35,14 +35,14 @@ class FetchEntryById extends DiaryEvent {
 }
 
 class AddDiaryEntry extends DiaryEvent {
-  final DiaryEntry entry;
+  final DiaryEntryModel entry;
   const AddDiaryEntry(this.entry);
   @override
   List<Object?> get props => [entry];
 }
 
 class UpdateDiaryEntry extends DiaryEvent {
-  final DiaryEntry entry;
+  final DiaryEntryModel entry;
   const UpdateDiaryEntry(this.entry);
   @override
   List<Object?> get props => [entry];

@@ -1,8 +1,7 @@
-import 'package:consist/features/diary/data/datasources/diary_local_data_source.dart';
+import 'dart:convert';
+import 'package:consist/core/utils/converters.dart';
 import 'package:consist/features/diary/data/models/diary_entry_model.dart';
-import 'package:consist/features/diary/data/repository/diary_repo_implementation.dart';
 import 'package:consist/features/diary/domain/entities/sticker_model.dart';
-import 'package:consist/features/diary/domain/repository/diary_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +11,35 @@ part 'diary_entry_state.dart';
 
 class DiaryEntryBloc extends Bloc<DiaryEntryEvent, DiaryEntryState> {
   DiaryEntryBloc() : super(DiaryEntryState()) {
+    on<InitializeDiaryEntry>((event, emit) {
+      final e = event.entry;
+
+      if (e != null) {
+        emit(
+          state.copyWith(
+            title: e.title,
+            description: e.content,
+            mood: e.mood,
+            bgColor: e.bgColor is String
+                ? AppConverters.stringToColorDiary(e.bgColor)
+                : e.bgColor as Color?,
+            bgImage: e.bgImagePath ?? '',
+            stickers: e.stickersJson != null
+                ? (jsonDecode(e.stickersJson!) as List)
+                      .map((s) => StickerModel.fromJson(s))
+                      .toList()
+                : [],
+            images: e.imagesJson != null
+                ? (jsonDecode(e.imagesJson!) as List)
+                      .map((i) => DiaryImage.fromJson(i))
+                      .toList()
+                : [],
+            date: DateTime.tryParse(e.date) ?? DateTime.now(),
+          ),
+        );
+      }
+    });
+
     on<TitleChanged>((event, emit) => emit(state.copyWith(title: event.title)));
     on<DescriptionChanged>(
       (event, emit) => emit(state.copyWith(description: event.description)),
@@ -38,7 +66,7 @@ class DiaryEntryBloc extends Bloc<DiaryEntryEvent, DiaryEntryState> {
       (event, emit) =>
           emit(state.copyWith(description: '${state.description}\n• ')),
     );
-    on<SaveEntry>(_onSaveEntry);
+
     on<UpdateStickerPosition>((event, emit) {
       final updatedStickers = state.stickers.map((s) {
         if (s.id == event.id) return s.copyWith(x: event.x, y: event.y);
@@ -60,7 +88,6 @@ class DiaryEntryBloc extends Bloc<DiaryEntryEvent, DiaryEntryState> {
       emit(state.copyWith(stickers: updatedStickers));
     });
 
-    // New image events
     on<ImageAdded>((event, emit) {
       final newImage = DiaryImage(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -97,33 +124,5 @@ class DiaryEntryBloc extends Bloc<DiaryEntryEvent, DiaryEntryState> {
           .toList();
       emit(state.copyWith(images: updatedImages));
     });
-  }
-  Future<void> _onSaveEntry(
-    SaveEntry event,
-    Emitter<DiaryEntryState> emit,
-  ) async {
-     final diaryLocalDataSource = DiaryLocalDataSource();
-  final DiaryRepository diaryRepository = DiaryRepositoryImpl(
-    diaryLocalDataSource,
-  );
-    final now = DateTime.now();
-
-    final entry = DiaryEntryModel(
-      id: now.microsecondsSinceEpoch.toString(),
-      title: state.title,
-      date: state.date.toIso8601String(),
-      preview: state.description.length > 50
-          ? state.description.substring(0, 50)
-          : state.description,
-      mood: state.mood,
-      content: state.description,
-      imagePath: null,
-      bgColor: state.bgColor?.value .toString(),
-      bgImagePath: state.bgImage,
-      stickers: state.stickers.map((s) => s.sticker).toList(),
-      createdAt: now.toIso8601String(),
-      updatedAt: now.toIso8601String(),
-    );
-    await diaryRepository.addEntry(entry);
   }
 }

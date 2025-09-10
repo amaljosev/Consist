@@ -6,8 +6,14 @@ abstract class DiaryEntryEvent extends Equatable {
   @override
   List<Object?> get props => [];
 }
+class InitializeDiaryEntry extends DiaryEntryEvent {
+  final DiaryEntryModel? entry;
+  const InitializeDiaryEntry(this.entry);
 
-// Field changes
+  @override
+  List<Object?> get props => [entry];
+}
+
 class TitleChanged extends DiaryEntryEvent {
   final String title;
   const TitleChanged(this.title);

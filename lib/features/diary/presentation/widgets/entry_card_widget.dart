@@ -1,16 +1,14 @@
 import 'package:consist/core/utils/converters.dart';
-import 'package:consist/features/diary/domain/entities/diary_entry_model.dart';
+import 'package:consist/features/diary/data/models/diary_entry_model.dart';
+import 'package:consist/features/diary/presentation/blocs/diary/diary_bloc.dart';
+import 'package:consist/features/diary/presentation/pages/preview/diary_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DiaryEntryCard extends StatelessWidget {
-  final DiaryEntry entry;
-  final Color backgroundColor;
+  final DiaryEntryModel entry;
 
-  const DiaryEntryCard({
-    super.key,
-    required this.entry,
-    required this.backgroundColor,
-  });
+  const DiaryEntryCard({super.key, required this.entry});
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +30,7 @@ class DiaryEntryCard extends StatelessWidget {
         leading: Container(
           width: 50,
           height: 50,
-          decoration: BoxDecoration(
-            color: backgroundColor.withValues(alpha: 0.5),
-            borderRadius: BorderRadius.circular(12),
-          ),
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
           child: Center(
             child: Text(entry.mood, style: const TextStyle(fontSize: 24)),
           ),
@@ -62,8 +57,13 @@ class DiaryEntryCard extends StatelessWidget {
           ],
         ),
         trailing: Icon(Icons.chevron_right, color: Colors.grey),
-        onTap: () {
-          // Handle diary entry tap
+        onTap: () async {
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => DiaryPreviewScreen(entry: entry)),
+          );
+          if (result == true && context.mounted) {
+            context.read<DiaryBloc>().add(LoadDiaryEntries());
+          }
         },
       ),
     );

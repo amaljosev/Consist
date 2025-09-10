@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:consist/features/diary/data/models/diary_entry_model.dart';
 import 'package:consist/features/diary/domain/entities/sticker_model.dart';
-import 'package:consist/features/diary/presentation/blocs/diary/diary_bloc.dart' show LoadDiaryEntries, DiaryBloc;
+import 'package:consist/features/diary/presentation/blocs/diary/diary_bloc.dart';
 import 'package:consist/features/diary/presentation/blocs/diary_entry/diary_entry_bloc.dart';
 import 'package:consist/features/diary/presentation/widgets/diary_ui_helpers.dart';
 import 'package:flutter/material.dart';
@@ -9,20 +11,21 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart' as intl;
 
 class DiaryEntryScreen extends StatelessWidget {
-  const DiaryEntryScreen({super.key});
+  const DiaryEntryScreen({super.key, required this.entry});
+  final DiaryEntryModel? entry;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => DiaryEntryBloc(),
-      child: const DiaryEntryForm(),
+      child: DiaryEntryForm(entry: entry),
     );
   }
 }
 
 class DiaryEntryForm extends StatefulWidget {
-  const DiaryEntryForm({super.key});
-
+  const DiaryEntryForm({super.key, required this.entry});
+  final DiaryEntryModel? entry;
   @override
   State<DiaryEntryForm> createState() => _DiaryEntryFormState();
 }
@@ -36,6 +39,11 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
   void initState() {
     super.initState();
     _bloc = context.read<DiaryEntryBloc>();
+    if (widget.entry != null) {
+      _bloc.add(InitializeDiaryEntry(widget.entry));
+      _titleController.text = widget.entry?.title ?? "";
+      _descriptionController.text = widget.entry?.content ?? "";
+    }
   }
 
   @override
@@ -81,14 +89,17 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          AppBar(backgroundColor: Colors.transparent),
+          AppBar(
+            backgroundColor: Colors.transparent,
+            foregroundColor: Theme.of(context).colorScheme.onSurface,
+          ),
           _buildHeaderSection(state, context),
           const SizedBox(height: 20),
           _buildTitleField(context),
           _buildDescriptionSection(state, context),
           _buildActionButtons(context),
           const SizedBox(height: 16),
-          _buildSaveButton(context),
+          _buildSaveButton(context, state),
         ],
       ),
     );
@@ -240,7 +251,6 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
           final newX = (sticker.x + details.focalPointDelta.dx).toDouble();
           final newY = (sticker.y + details.focalPointDelta.dy).toDouble();
           _bloc.add(UpdateStickerPosition(sticker.id, newX, newY));
-
           final scaledSize = (sticker.size * details.scale).clamp(12.0, 200.0);
           _bloc.add(UpdateStickerSize(sticker.id, scaledSize.toDouble()));
         },
@@ -265,7 +275,6 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
           final newX = (image.x + details.focalPointDelta.dx).toDouble();
           final newY = (image.y + details.focalPointDelta.dy).toDouble();
           _bloc.add(UpdateImagePosition(image.id, newX, newY));
-
           final newScale = (image.scale * details.scale).clamp(0.5, 3.0);
           _bloc.add(UpdateImageSize(image.id, newScale.toDouble()));
         },
@@ -327,16 +336,38 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
     );
   }
 
-  Widget _buildSaveButton(BuildContext context) {
+  Widget _buildSaveButton(BuildContext context, DiaryEntryState state) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: (){
-          _bloc.add(SaveEntry());
-          Navigator.pop(context);
-           context.read<DiaryBloc>().add(LoadDiaryEntries());
+        onPressed: () {
+          final entry = DiaryEntryModel(
+            id: DateTime.now().toIso8601String(),
+            title: _titleController.text,
+            date: DateTime.now().toIso8601String(),
+            preview: _descriptionController.text,
+            mood: state.mood,
+            content: _descriptionController.text,
+            createdAt: DateTime.now().toIso8601String(),
+            updatedAt: DateTime.now().toIso8601String(),
+            bgColor: "${state.bgColor ?? Colors.white.toString()}",
+            stickersJson: jsonEncode(
+              state.stickers.map((s) => s.toJson()).toList(),
+            ),
+            imagesJson: jsonEncode(
+              state.images.map((i) => i.toJson()).toList(),
+            ),
+            bgImagePath: state.bgImage,
+          );
+
+          if (widget.entry != null) {
+            context.read<DiaryBloc>().add(UpdateDiaryEntry(entry));
+          } else {
+            context.read<DiaryBloc>().add(AddDiaryEntry(entry));
+          }
+          Navigator.pop(context, true);
         },
-        child: const Text('Save Entry'),
+        child: Text(widget.entry != null ? 'Update diary' : 'Save'),
       ),
     );
   }

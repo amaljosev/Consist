@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
 Future<void> resetDatabase() async {
   final dbPath = await getDatabasesPath();
   final habitPath = join(dbPath, 'habits.db');
-   final diaryPath = join(dbPath, 'habits.db');
+   final diaryPath = join(dbPath, 'consist_diary.db');
 
   try {
     await deleteDatabase(habitPath);

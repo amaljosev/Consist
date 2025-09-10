@@ -18,7 +18,7 @@ class DiaryLocalDataSource {
       );
     } catch (e, st) {
       log('insertEntry error: $e', stackTrace: st);
-      rethrow; // optionally rethrow if you want upper layers to handle it
+      rethrow; 
     }
   }
 
@@ -29,7 +29,7 @@ class DiaryLocalDataSource {
       return maps.map((m) => DiaryEntryModel.fromMap(m)).toList();
     } catch (e, st) {
       log('getAllEntries error: $e', stackTrace: st);
-      return []; // return empty list on failure
+      return []; 
     }
   }
 

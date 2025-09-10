@@ -30,7 +30,23 @@ class StickerModel extends Equatable {
       size: size ?? this.size,
     );
   }
+ Map<String, dynamic> toJson() => {
+        'id': id,
+        'sticker': sticker,
+        'x': x,
+        'y': y,
+        'size': size,
+      };
 
+  factory StickerModel.fromJson(Map<String, dynamic> json) {
+    return StickerModel(
+      id: json['id'],
+      sticker: json['sticker'],
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+      size: (json['size'] as num).toDouble(),
+    );
+  }
   @override
   List<Object?> get props => [id, sticker, x, y, size];
 }

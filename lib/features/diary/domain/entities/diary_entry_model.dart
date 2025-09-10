@@ -8,8 +8,8 @@ class DiaryEntry {
   final String? imagePath;
   final String? bgColor;
   final String? bgImagePath;
-  final List<String>? stickers;
-
+  final String? stickersJson;
+  final String? imagesJson;
   final String createdAt;
   final String updatedAt;
 
@@ -23,7 +23,8 @@ class DiaryEntry {
     this.imagePath,
     this.bgColor,
     this.bgImagePath,
-    this.stickers,
+    this.stickersJson,
+    this.imagesJson,
     required this.createdAt,
     required this.updatedAt,
   });

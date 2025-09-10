@@ -56,7 +56,6 @@ class DiaryEntryState extends Equatable {
   ];
 }
 
-// DiaryImage model (add this to your existing sticker_model.dart or create new file)
 class DiaryImage extends Equatable {
   final String id;
   final String imagePath;
@@ -69,11 +68,11 @@ class DiaryImage extends Equatable {
   const DiaryImage({
     required this.id,
     required this.imagePath,
-    this.x = 0,
-    this.y = 0,
-    this.width = 100,
-    this.height = 100,
-    this.scale = 1.0,
+    required this.x,
+    required this.y,
+    required this.width,
+    required this.height,
+    required this.scale,
   });
 
   DiaryImage copyWith({
@@ -93,6 +92,28 @@ class DiaryImage extends Equatable {
       width: width ?? this.width,
       height: height ?? this.height,
       scale: scale ?? this.scale,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'imagePath': imagePath,
+        'x': x,
+        'y': y,
+        'width': width,
+        'height': height,
+        'scale': scale,
+      };
+
+  factory DiaryImage.fromJson(Map<String, dynamic> json) {
+    return DiaryImage(
+      id: json['id'],
+      imagePath: json['imagePath'],
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+      width: (json['width'] as num).toDouble(),
+      height: (json['height'] as num).toDouble(),
+      scale: (json['scale'] as num).toDouble(),
     );
   }
 
