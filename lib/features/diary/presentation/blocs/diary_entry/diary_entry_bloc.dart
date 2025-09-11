@@ -57,11 +57,12 @@ class DiaryEntryBloc extends Bloc<DiaryEntryEvent, DiaryEntryState> {
       final newSticker = StickerModel(
         id: DateTime.now().toString(),
         sticker: event.sticker,
-        x: 0,
-        y: 0,
+        x: event.x, 
+        y: event.y, 
       );
       emit(state.copyWith(stickers: [...state.stickers, newSticker]));
     });
+
     on<BulletInserted>(
       (event, emit) =>
           emit(state.copyWith(description: '${state.description}\n• ')),
@@ -92,8 +93,8 @@ class DiaryEntryBloc extends Bloc<DiaryEntryEvent, DiaryEntryState> {
       final newImage = DiaryImage(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         imagePath: event.imagePath,
-        x: 0,
-        y: 0,
+        x: event.x, 
+        y: event.y, 
         width: 100,
         height: 100,
         scale: 1.0,
@@ -125,22 +126,13 @@ class DiaryEntryBloc extends Bloc<DiaryEntryEvent, DiaryEntryState> {
       emit(state.copyWith(images: updatedImages));
     });
     on<SelectSticker>((event, emit) {
-  emit(state.copyWith(
-    selectedStickerId: event.id,
-    selectedImageId: null,
-  ));
-});
-on<SelectImage>((event, emit) {
-  emit(state.copyWith(
-    selectedImageId: event.id,
-    selectedStickerId: null, 
-  ));
-});
-on<DeselectAll>((event, emit) {
-  emit(state.copyWith(
-    selectedStickerId: null,
-    selectedImageId: null,
-  ));
-});
+      emit(state.copyWith(selectedStickerId: event.id, selectedImageId: null));
+    });
+    on<SelectImage>((event, emit) {
+      emit(state.copyWith(selectedImageId: event.id, selectedStickerId: null));
+    });
+    on<DeselectAll>((event, emit) {
+      emit(state.copyWith(selectedStickerId: '', selectedImageId: ''));
+    });
   }
 }

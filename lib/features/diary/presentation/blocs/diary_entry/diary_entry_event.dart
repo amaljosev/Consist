@@ -56,10 +56,12 @@ class BgImageChanged extends DiaryEntryEvent {
 
 class StickerAdded extends DiaryEntryEvent {
   final String sticker;
-  const StickerAdded(this.sticker);
+  final double x;
+  final double y;
+  const StickerAdded(this.sticker, this.x, this.y);
 
   @override
-  List<Object?> get props => [sticker];
+  List<Object?> get props => [sticker, x, y];
 }
 
 class BulletInserted extends DiaryEntryEvent {}
@@ -104,10 +106,12 @@ class RemoveSticker extends DiaryEntryEvent {
 // New image events
 class ImageAdded extends DiaryEntryEvent {
   final String imagePath;
-  const ImageAdded(this.imagePath);
+  final double x;
+  final double y;
+  const ImageAdded(this.imagePath, this.x, this.y);
 
   @override
-  List<Object?> get props => [imagePath];
+  List<Object?> get props => [imagePath, x, y];
 }
 
 class UpdateImagePosition extends DiaryEntryEvent {

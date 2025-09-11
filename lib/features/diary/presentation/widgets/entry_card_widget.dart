@@ -59,7 +59,7 @@ class DiaryEntryCard extends StatelessWidget {
         trailing: Icon(Icons.chevron_right, color: Colors.grey),
         onTap: () async {
           final result = await Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => DiaryPreviewScreen(entry: entry)),
+            MaterialPageRoute(builder: (_) => DiaryPreviewScreen(entryId: entry.id)),
           );
           if (result == true && context.mounted) {
             context.read<DiaryBloc>().add(LoadDiaryEntries());

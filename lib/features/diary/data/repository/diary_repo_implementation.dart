@@ -11,7 +11,7 @@ class DiaryRepositoryImpl implements DiaryRepository {
   @override
 Future<void> addEntry(DiaryEntryModel entry) async {
   try {
-    await localDataSource.insertEntry(entry); // ✅ directly
+    await localDataSource.insertEntry(entry); 
   } catch (e, st) {
     log('addEntry error: $e', stackTrace: st);
     rethrow;
@@ -21,7 +21,7 @@ Future<void> addEntry(DiaryEntryModel entry) async {
 @override
 Future<void> updateEntry(DiaryEntryModel entry) async {
   try {
-    await localDataSource.updateEntry(entry); // ✅ directly
+    await localDataSource.updateEntry(entry); 
   } catch (e, st) {
     log('updateEntry error: $e', stackTrace: st);
     rethrow;

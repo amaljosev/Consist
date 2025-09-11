@@ -40,14 +40,12 @@ class DiaryScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-              // navigate to add-entry screen, then refresh
               final result = await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => const DiaryEntryScreen(entry: null),
                 ),
               );
               if (result == true&&context.mounted) {
-                // Reload entries after adding new one
                 context.read<DiaryBloc>().add(LoadDiaryEntries());
               }
             },

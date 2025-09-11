@@ -56,7 +56,7 @@ class DiaryLocalDataSource {
       );
     } catch (e, st) {
       log('updateEntry error: $e', stackTrace: st);
-      return 0; // 0 means no rows affected
+      return 0; 
     }
   }
 
