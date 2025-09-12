@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 import 'package:consist/features/diary/data/models/diary_entry_model.dart';
 import 'package:consist/features/diary/domain/entities/sticker_model.dart';
 import 'package:consist/features/diary/presentation/blocs/diary/diary_bloc.dart';
 import 'package:consist/features/diary/presentation/blocs/diary_entry/diary_entry_bloc.dart';
 import 'package:consist/features/diary/presentation/widgets/diary_ui_helpers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -447,9 +447,9 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
             id: widget.entry == null
                 ? DateTime.now().toIso8601String()
                 : widget.entry!.id,
-            title: _titleController.text,
+            title: _titleController.text.trim(),
             date: state.date.toIso8601String(),
-            preview: _descriptionController.text,
+            preview: _descriptionController.text.trim(),
             mood: state.mood,
             content: _descriptionController.text,
             createdAt: widget.entry == null
@@ -658,11 +658,7 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
         _bloc.add(ImageAdded(image.path, position.dx, position.dy));
       }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to pick image: $e')));
-      }
+      log('Failed to pick image: $e');
     }
   }
 
@@ -715,76 +711,5 @@ class _DiaryEntryFormState extends State<DiaryEntryForm> {
       // Fallback to center of the description section
       return const Offset(150, 150);
     }
-  }
-}
-
-// New widget for preview screen
-class DiaryPreviewWidget extends StatelessWidget {
-  final String title;
-  final String content;
-  final List<StickerModel> stickers;
-  final List<DiaryImage> images;
-  final Color? bgColor;
-  final String bgImage;
-
-  const DiaryPreviewWidget({
-    super.key,
-    required this.title,
-    required this.content,
-    required this.stickers,
-    required this.images,
-    this.bgColor,
-    this.bgImage = '',
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: bgColor,
-        image: bgImage.isNotEmpty
-            ? DecorationImage(image: AssetImage(bgImage), fit: BoxFit.cover)
-            : null,
-      ),
-      child: Stack(
-        children: [
-          // Content text
-          Text(content),
-
-          // Stickers overlay
-          ...stickers
-              .map(
-                (sticker) => Positioned(
-                  left: sticker.x,
-                  top: sticker.y,
-                  child: Text(
-                    sticker.sticker,
-                    style: TextStyle(fontSize: sticker.size),
-                  ),
-                ),
-              )
-              .toList(),
-
-          // Images overlay
-          ...images
-              .map(
-                (image) => Positioned(
-                  left: image.x,
-                  top: image.y,
-                  child: Transform.scale(
-                    scale: image.scale,
-                    child: Image.file(
-                      File(image.imagePath),
-                      width: image.width,
-                      height: image.height,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
-        ],
-      ),
-    );
   }
 }

@@ -68,78 +68,122 @@ class DiaryUIHelpers {
     );
   }
 
-  /// Color picker
   static void openColorPicker(
-    BuildContext context,
-    Function(Color) onSelected,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => SafeArea(
-        child: GridView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: AppColors.myColors.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            mainAxisSpacing: 12,
-            childAspectRatio: 1,
-            crossAxisSpacing: 10,
-          ),
-          itemBuilder: (_, index) {
-            final color = AppColors.myColors[index]['color'] as Color;
+  BuildContext context,
+  Function(Color) onSelected, 
+) {
+  showModalBottomSheet(
+    context: context,
+    builder: (_) => SafeArea(
+      child: GridView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: AppColors.myColors.length + 1, // +1 for clear selection
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 4,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1,
+          crossAxisSpacing: 10,
+        ),
+        itemBuilder: (_, index) {
+          if (index == 0) {
+            // Clear selection item
             return GestureDetector(
               onTap: () {
-                onSelected(color);
+                onSelected(Colors.white);
                 Navigator.pop(context);
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: color,
+                  color: Colors.white,
                   shape: BoxShape.circle,
                   border: Border.all(width: 2, color: Colors.black12),
                 ),
+                child: const Icon(Icons.clear, color: Colors.black54),
               ),
             );
-          },
-        ),
+          }
+          
+          final colorIndex = index - 1; // Adjust index for the colors list
+          final color = AppColors.myColors[colorIndex]['color'] as Color;
+          return GestureDetector(
+            onTap: () {
+              onSelected(color);
+              Navigator.pop(context);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+                border: Border.all(width: 2, color: Colors.black12),
+              ),
+            ),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
 
-  /// Background image picker
-  static void openBgImagePicker(
-    BuildContext context,
-    Function(String) onSelected,
-  ) {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => SafeArea(
-        child: GridView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: DiaryItems.bgImages.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            mainAxisSpacing: 12,
-            childAspectRatio: 0.5,
-            crossAxisSpacing: 10,
-          ),
-          itemBuilder: (_, index) {
-            final imgPath = DiaryItems.bgImages[index];
+/// Background image picker
+static void openBgImagePicker(
+  BuildContext context,
+  Function(String) onSelected, // Changed to accept null for clear selection
+) {
+  showModalBottomSheet(
+    context: context,
+    builder: (_) => SafeArea(
+      child: GridView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: DiaryItems.bgImages.length + 1, // +1 for clear selection
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          mainAxisSpacing: 12,
+          childAspectRatio: 0.5,
+          crossAxisSpacing: 10,
+        ),
+        itemBuilder: (_, index) {
+          if (index == 0) {
+            // Clear selection item
             return GestureDetector(
               onTap: () {
-                onSelected(imgPath);
+                onSelected(''); 
                 Navigator.pop(context);
               },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.asset(imgPath, fit: BoxFit.cover),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(width: 1, color: Colors.grey),
+                ),
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.clear, size: 30, color: Colors.black54),
+                    SizedBox(height: 8),
+                    Text("Clear", style: TextStyle(color: Colors.black54)),
+                  ],
+                ),
               ),
             );
-          },
-        ),
+          }
+          
+          final imgIndex = index - 1; // Adjust index for the images list
+          final imgPath = DiaryItems.bgImages[imgIndex];
+          return GestureDetector(
+            onTap: () {
+              onSelected(imgPath);
+              Navigator.pop(context);
+            },
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(imgPath, fit: BoxFit.cover),
+            ),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
 
   /// Sticker picker
   static void openStickerPicker(

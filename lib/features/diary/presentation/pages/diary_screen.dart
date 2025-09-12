@@ -11,45 +11,168 @@ class DiaryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Diary"),
-        centerTitle: true,
-      ),
       body: BlocBuilder<DiaryBloc, DiaryState>(
         builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+          return CustomScrollView(
+            slivers: [
+              // Custom Sliver App Bar with image
+              SliverAppBar(
+                expandedHeight: 200.0,
+                stretch: true,
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black87,
+                flexibleSpace: FlexibleSpaceBar(
+                  stretchModes: const [StretchMode.blurBackground],
+                  background: Image.asset(
+                    'assets/img/diary.png',
+                    fit: BoxFit.cover,
+                  ),
+                  centerTitle: true,
+                  titlePadding: const EdgeInsets.only(
+                    bottom: 16,
+                  ), // move closer to bottom
+                  title: const Text(
+                    "My Diary",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 6,
+                          color: Colors.black45,
+                          offset: Offset(1, 1),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                floating: false,
+                pinned: false,
+                snap: false,
+              ),
 
-          if (state.errorMessage != null) {
-            return Center(child: Text("Error: ${state.errorMessage}"));
-          }
+              // Header with month/year
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Recent Entries",
+                        style: Theme.of(context).textTheme.headlineSmall,
+                      ),
+                      const Spacer(),
+                      Text(
+                        "${DateTime.now().month}/${DateTime.now().year}",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
 
-          if (state.entries.isEmpty) {
-            return const Center(child: Text("No diary entries yet"));
-          }
-
-          return ListView.builder(
-            itemCount: state.entries.length,
-            itemBuilder: (context, index) {
-              final DiaryEntryModel entry = state.entries[index];
-              return DiaryEntryCard(entry: entry);
-            },
+              // Show appropriate state
+              if (state.isLoading)
+                const SliverFillRemaining(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    ),
+                  ),
+                )
+              else if (state.errorMessage != null)
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Error: ${state.errorMessage}",
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              context.read<DiaryBloc>().add(LoadDiaryEntries());
+                            },
+                            child: const Text("Try Again"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              else if (state.entries.isEmpty)
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/empty_diary.png',
+                            height: 180,
+                          ),
+                          const SizedBox(height: 24),
+                          const Text(
+                            "No entries yet",
+                            style: TextStyle(fontSize: 18, color: Colors.grey),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Start writing your thoughts...",
+                            style: TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              else
+                // Entries list
+                SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final DiaryEntryModel entry = state.entries[index];
+                    return DiaryEntryCard(entry: entry);
+                  }, childCount: state.entries.length),
+                ),
+            ],
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-              final result = await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const DiaryEntryScreen(entry: null),
-                ),
-              );
-              if (result == true&&context.mounted) {
-                context.read<DiaryBloc>().add(LoadDiaryEntries());
-              }
-            },
-        child: const Icon(Icons.add),
+          final result = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => const DiaryEntryScreen(entry: null),
+            ),
+          );
+          if (result == true && context.mounted) {
+            context.read<DiaryBloc>().add(LoadDiaryEntries());
+          }
+        },
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add, size: 28),
       ),
     );
   }
