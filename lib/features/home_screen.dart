@@ -37,9 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
           body: _pages[_selectedIndex],
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _selectedIndex,
-            onTap: (index) => context.read<HabitsBloc>().add(
+            onTap: (index) =>_selectedIndex!=index? context.read<HabitsBloc>().add(
               BottomNavScreenChangeEvent(index: index),
-            ),
+            ):null,
             type: BottomNavigationBarType.fixed,
             selectedItemColor: Theme.of(context).colorScheme.primary,
             unselectedItemColor: Colors.grey,
@@ -47,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
               BottomNavigationBarItem(
                 icon: Icon(MyFlutterApp.tasks),
                 label: 'Goals',
+                
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.library_books_outlined),

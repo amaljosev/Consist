@@ -10,7 +10,7 @@ import 'package:consist/features/habit/data/repositories/habit_repository_impl.d
 import 'package:consist/features/habit/domain/create_habit/repositories/habit_repository.dart';
 import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_bloc.dart';
 import 'package:consist/features/habit/presentation/pages/create_habit/bloc/create_bloc.dart';
-import 'package:consist/features/habit/presentation/pages/home_screen.dart';
+import 'package:consist/features/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart';

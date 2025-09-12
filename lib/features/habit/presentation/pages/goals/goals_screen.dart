@@ -27,64 +27,121 @@ class _GoalsScreenState extends State<GoalsScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: !isDark
-          ? const Color.fromARGB(177, 10, 182, 164)
-          : const Color.fromARGB(255, 13, 56, 141),
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          header(size, context, isDark),
-        ],
-        body: BlocConsumer<HabitsBloc, HabitsState>(
-          listener: (context, state) {
-            if (state is HabitCompleteSuccess) {
-              context.read<HabitsBloc>().add(LoadHabitsEvent());
-            }
-          },
-          builder: (context, state) {
-            if (state is HabitsLoading) {
-              return AppLoading();
-            } else if (state is HabitsLoaded) {
-              final habits = state.filtered;
-              final allHabits = state.habits;
-              final selectedCategoryId = state.cat;
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: BlocConsumer<HabitsBloc, HabitsState>(
+        listener: (context, state) {
+          if (state is HabitCompleteSuccess) {
+            context.read<HabitsBloc>().add(LoadHabitsEvent());
+          }
+        },
+        builder: (context, state) {
+          if (state is HabitsLoading) {
+            return AppLoading();
+          } else if (state is HabitsLoaded) {
+            final habits = state.filtered;
+            final allHabits = state.habits;
+            final selectedCategoryId = state.cat;
 
-              return allHabits.isEmpty
-                  ?const NoHabits()
-                  : Column(
-                      children: [
-                        HabitCategoriesSlider(selectedCategoryId: selectedCategoryId),
-                        GoalsList(habits: habits, isDark: isDark, size: size),
-                      ],
-                    );
-            } else if (state is HabitsError) {
-              return Center(child: Text("Error: ${state.message}"));
-            }
-            return const Center(
-              child: Text("Welcome! Add a habit to get started."),
-            );
-          },
-        ),
+            return allHabits.isEmpty
+                ? const NoHabits()
+                : NestedScrollView(
+                    headerSliverBuilder: (context, innerBoxIsScrolled) => [
+                      header(size, context),
+                      // Add the categories as a pinned sliver
+                      SliverPersistentHeader(
+                        pinned: true,
+                        delegate: _CategoriesSliverDelegate(
+                          child: HabitCategoriesSlider(
+                            selectedCategoryId: selectedCategoryId,
+                          ),
+                        ),
+                      ),
+                    ],
+                    body: GoalsList(habits: habits, isDark: isDark, size: size),
+                  );
+          } else if (state is HabitsError) {
+            return Center(child: Text("Error: ${state.message}"));
+          }
+          return const Center(
+            child: Text("Welcome! Add a habit to get started."),
+          );
+        },
       ),
       floatingActionButton: NewRoutine(isDark: isDark),
     );
   }
 }
 
-SliverAppBar header(Size size, BuildContext context, bool isDark) {
+class _CategoriesSliverDelegate extends SliverPersistentHeaderDelegate {
+  _CategoriesSliverDelegate({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      child: SizedBox.expand( // ⬅️ force it to fill the sliver height
+        child: child,
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => 70.0; // match your HabitCategoriesSlider height
+  @override
+  double get minExtent => 70.0;
+
+  @override
+  bool shouldRebuild(_CategoriesSliverDelegate oldDelegate) {
+    return child != oldDelegate.child;
+  }
+}
+
+
+SliverAppBar header(Size size, BuildContext context) {
   return SliverAppBar.large(
-    expandedHeight: size.height * 0.1,
+    expandedHeight: size.height * 0.15,
     backgroundColor: Theme.of(context).colorScheme.surface,
     flexibleSpace: FlexibleSpaceBar(
-      background: Image.asset(
-        isDark
-            ? 'assets/img/dashboard_dark.png'
-            : 'assets/img/dashboard_light.png',
-        fit: BoxFit.cover,
+      background: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your Goals',
+                style: Theme.of(context).textTheme.headlineLarge!.copyWith(
+                  fontSize: 40,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Text(
+                'for today',
+                style: Theme.of(
+                  context,
+                ).textTheme.headlineMedium!.copyWith(color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
       ),
       expandedTitleScale: 1.0,
       stretchModes: [StretchMode.zoomBackground],
     ),
-    title: const Text('Small steps, big results. Keep going!'),
+    title: Text(
+      'Small steps, big results. Keep going!',
+      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
+    ),
+    centerTitle: true,
     automaticallyImplyLeading: false,
     elevation: 0,
     pinned: true,

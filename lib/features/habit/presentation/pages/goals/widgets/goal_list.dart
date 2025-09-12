@@ -19,51 +19,49 @@ class GoalsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: habits.isEmpty
-          ? const Center(child: Text("No habits found"))
-          : ListView.builder(
-              padding: const EdgeInsets.all(5),
-              itemCount: habits.length,
-              itemBuilder: (context, index) {
-                final habit = habits[index];
-                Color? habitColor =
-                    CommonFunctions.getColorById(habit.habitColorId ?? "") ??
-                    Theme.of(context).colorScheme.secondary;
-                Color colorD = CommonFunctions.darken(habitColor);
-
-                IconData? habitIcon = CommonFunctions.getIconById(
-                  habit.habitIconId ?? "",
-                );
-                bool isComplete = CommonFunctions.isNewDayForHabit(
-                  habit.isCompleteToday,
-                );
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 5),
-                  child: ListTile(
-                    leading: _leading(habitColor, habitIcon, colorD),
-                    title: _title(
-                      context,
-                      habitColor,
-                      colorD,
-                      habit,
-                      habitIcon,
-                    ),
-                    titleTextStyle: Theme.of(context).textTheme.headlineSmall!
-                        .copyWith(fontWeight: FontWeight.w800),
-                    trailing: _trailing(
-                      context,
-                      habit,
-                      isComplete,
-                      colorD,
-                      habitColor,
-                    ),
+    return habits.isEmpty
+        ? const Center(child: Text("No habits found"))
+        : ListView.builder(
+            padding: const EdgeInsets.all(5),
+            itemCount: habits.length,
+            itemBuilder: (context, index) {
+              final habit = habits[index];
+              Color? habitColor =
+                  CommonFunctions.getColorById(habit.habitColorId ?? "") ??
+                  Theme.of(context).colorScheme.secondary;
+              Color colorD = CommonFunctions.darken(habitColor);
+    
+              IconData? habitIcon = CommonFunctions.getIconById(
+                habit.habitIconId ?? "",
+              );
+              bool isComplete = CommonFunctions.isNewDayForHabit(
+                habit.isCompleteToday,
+              );
+    
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                child: ListTile(
+                  leading: _leading(habitColor, habitIcon, colorD),
+                  title: _title(
+                    context,
+                    habitColor,
+                    colorD,
+                    habit,
+                    habitIcon,
                   ),
-                );
-              },
-            ),
-    );
+                  titleTextStyle: Theme.of(context).textTheme.headlineSmall!
+                      .copyWith(fontWeight: FontWeight.w800),
+                  trailing: _trailing(
+                    context,
+                    habit,
+                    isComplete,
+                    colorD,
+                    habitColor,
+                  ),
+                ),
+              );
+            },
+          );
   }
 
   GestureDetector _trailing(

@@ -1,5 +1,5 @@
 import 'package:consist/core/app_icons.dart';
-import 'package:consist/features/habit/presentation/pages/home_screen.dart';
+import 'package:consist/features/home_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
