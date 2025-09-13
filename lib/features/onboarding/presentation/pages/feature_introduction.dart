@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class FeatureIntroductionScreen extends StatelessWidget {
   const FeatureIntroductionScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -10,33 +9,26 @@ class FeatureIntroductionScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            'assets/img/onboarding/onboarding1.png',
-            height: 250,
-          ),
+          Image.asset('assets/img/onboarding/onboarding1.png', height: 250),
           const SizedBox(height: 40),
-          const Text(
+          Text(
             'Build Better Habits, One Day at a Time',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF333333),
-            ),
+            style: Theme.of(context).textTheme.headlineMedium,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Track routines + reflect on your journey with our integrated diary',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium!.copyWith(color: Colors.grey),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 40),
           _FeatureItem(
             icon: Icons.track_changes,
-            text: 'Log daily routines, set reminders, and visualize your progress streaks',
+            text:
+                'Log daily routines, set reminders, and visualize your progress streaks',
           ),
           const SizedBox(height: 16),
           _FeatureItem(
@@ -57,21 +49,16 @@ class FeatureIntroductionScreen extends StatelessWidget {
 class _FeatureItem extends StatelessWidget {
   final IconData icon;
   final String text;
-
   const _FeatureItem({required this.icon, required this.text});
-
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: const Color(0xFF4361EE), size: 24),
+        Icon(icon, color: Theme.of(context).colorScheme.primary),
         const SizedBox(width: 16),
         Expanded(
-          child: Text(
-            text,
-            style: const TextStyle(fontSize: 14, color: Color(0xFF666666)),
-          ),
+          child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
         ),
       ],
     );

@@ -10,54 +10,60 @@ class PrivacySafetyScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.network(
-            'https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80',
-            height: 200,
-          ),
+          Image.asset('assets/img/onboarding/onboarding3.png', height: 200),
           const SizedBox(height: 30),
-          const Text(
-            'Your Data is Secure',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF333333),
-            ),
+          Text(
+            'Your Data Stays With You',
+            style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'We take privacy seriously. Your personal data remains yours alone.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+          Text(
+            'All your information is stored only on your device. '
+            'We do not upload, track, or share any data online.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium!.copyWith(color: Colors.grey),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 30),
+
           _PrivacyFeature(
-            icon: Icons.security,
-            title: 'Local Data Storage',
+            icon: Icons.storage,
+            title: '100% Local Storage',
             description:
-                'Your entries remain on your device until you choose to sync',
+                'Your data is saved securely using an offline local database (SQLite).',
           ),
           const SizedBox(height: 16),
+
           _PrivacyFeature(
             icon: Icons.lock,
-            title: 'Encryption',
-            description: 'All data encrypted in transit and at rest',
+            title: 'Private by Design',
+            description:
+                'Since everything stays on your device, only you have access.',
           ),
           const SizedBox(height: 16),
+
           _PrivacyFeature(
             icon: Icons.shield,
-            title: 'No Third-Party Sharing',
-            description: 'We never sell your data to advertisers',
+            title: 'No Internet Sharing',
+            description: 'We never send your data to servers or third parties.',
           ),
           const SizedBox(height: 16),
+
           _PrivacyFeature(
             icon: Icons.settings,
-            title: 'Granular Controls',
-            description: 'You decide what information to share',
+            title: 'You’re in Control',
+            description:
+                'You can edit or delete your data anytime directly from the app.',
           ),
+
           const SizedBox(height: 30),
-          const Text(
-            'By continuing, you agree to our Privacy Policy and Terms of Service',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+          Text(
+            'By continuing, you understand that all information stays local '
+            'on your device only.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall!.copyWith(color: Colors.grey),
             textAlign: TextAlign.center,
           ),
         ],
@@ -70,36 +76,29 @@ class _PrivacyFeature extends StatelessWidget {
   final IconData icon;
   final String title;
   final String description;
-
   const _PrivacyFeature({
     required this.icon,
     required this.title,
     required this.description,
   });
-
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 16,
       children: [
-        Icon(icon, color: const Color(0xFF38B000), size: 24),
-        const SizedBox(width: 16),
+        Icon(icon, color: Theme.of(context).colorScheme.primary),
         Expanded(
           child: Column(
+            spacing: 4,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF333333),
-                ),
-              ),
-              const SizedBox(height: 4),
+              Text(title, style: Theme.of(context).textTheme.bodyMedium),
               Text(
                 description,
-                style: const TextStyle(fontSize: 14, color: Color(0xFF666666)),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium!.copyWith(color: Colors.grey),
               ),
             ],
           ),
