@@ -126,9 +126,12 @@ class DiaryScreen extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            'assets/img/diary.png',
-                            height: 180,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                            child: Image.asset(
+                              'assets/img/no_entries.png',
+                            
+                            ),
                           ),
                           const SizedBox(height: 24),
                           const Text(
@@ -168,7 +171,7 @@ class DiaryScreen extends StatelessWidget {
             context.read<DiaryBloc>().add(LoadDiaryEntries());
           }
         },
-        backgroundColor: Colors.green.shade900,
+     
         foregroundColor: Colors.white,
         elevation: 4,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

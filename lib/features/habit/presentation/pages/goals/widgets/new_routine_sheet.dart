@@ -8,6 +8,7 @@ class NewRoutine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      tooltip: 'Create Custom Habit',
       onPressed: () {
         showModalBottomSheet(
           context: context,

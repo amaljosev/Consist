@@ -1,6 +1,6 @@
 import 'package:consist/core/app_icons.dart';
 import 'package:consist/features/habit/presentation/blocs/habits_bloc/habits_bloc.dart';
-import 'package:consist/features/habit/presentation/pages/library/library_screen.dart';
+import 'package:consist/features/habit/presentation/pages/goals/widgets/no_habits.dart';
 import 'package:consist/features/habit/presentation/pages/me/me_screen.dart';
 import 'package:consist/features/diary/presentation/pages/diary_screen.dart';
 import 'package:consist/features/habit/presentation/pages/goals/goals_screen.dart';
@@ -19,7 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     GoalsScreen(),
-    LibraryScreen(),
+    HabitLibrary(fromHome: true),
     DiaryScreen(),
     MeScreen(),
   ];

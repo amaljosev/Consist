@@ -43,7 +43,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
             final selectedCategoryId = state.cat;
 
             return allHabits.isEmpty
-                ? const NoHabits()
+                ? const HabitLibrary(fromHome: false)
                 : NestedScrollView(
                     headerSliverBuilder: (context, innerBoxIsScrolled) => [
                       header(size, context),
@@ -85,14 +85,12 @@ class _CategoriesSliverDelegate extends SliverPersistentHeaderDelegate {
   ) {
     return Container(
       color: Theme.of(context).colorScheme.surface,
-      child: SizedBox.expand( // ⬅️ force it to fill the sliver height
-        child: child,
-      ),
+      child: SizedBox.expand(child: child),
     );
   }
 
   @override
-  double get maxExtent => 70.0; // match your HabitCategoriesSlider height
+  double get maxExtent => 70.0;
   @override
   double get minExtent => 70.0;
 
@@ -101,7 +99,6 @@ class _CategoriesSliverDelegate extends SliverPersistentHeaderDelegate {
     return child != oldDelegate.child;
   }
 }
-
 
 SliverAppBar header(Size size, BuildContext context) {
   return SliverAppBar.large(
