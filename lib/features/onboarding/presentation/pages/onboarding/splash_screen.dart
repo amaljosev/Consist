@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:consist/core/app_icons.dart';
 import 'package:consist/features/home_screen.dart';
-import 'package:consist/features/onboarding/presentation/blocs/bloc/boarding_bloc.dart';
-import 'package:consist/features/onboarding/presentation/pages/onboarding_screen.dart';
+import 'package:consist/features/onboarding/presentation/blocs/bloc/user_bloc.dart';
+import 'package:consist/features/onboarding/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +15,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    context.read<BoardingBloc>().add(CheckUserLoginStatusEvent());
+    context.read<UserBloc>().add(CheckUserLoginStatusEvent());
     super.initState();
   }
 
@@ -25,9 +23,8 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.pink.shade100,
-      body: BlocListener<BoardingBloc, BoardingState>(
+      body: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
-          log(state.toString());
           if (state is NewUserState) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(builder: (context) => const OnboardingScreen()),

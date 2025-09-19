@@ -13,8 +13,8 @@ import 'package:consist/features/habit/presentation/pages/create_habit/bloc/crea
 import 'package:consist/features/onboarding/data/datasources/user_datasource.dart';
 import 'package:consist/features/onboarding/data/repositories/user_repo_impl.dart';
 import 'package:consist/features/onboarding/domain/repository/user_repo.dart';
-import 'package:consist/features/onboarding/presentation/blocs/bloc/boarding_bloc.dart';
-import 'package:consist/features/onboarding/presentation/pages/splash_screen.dart';
+import 'package:consist/features/onboarding/presentation/blocs/bloc/user_bloc.dart';
+import 'package:consist/features/onboarding/presentation/pages/onboarding/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart';
@@ -64,7 +64,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => BoardingBloc(userRepository: userRepo)),
+        BlocProvider(create: (_) => UserBloc(userRepository: userRepo)),
         BlocProvider(create: (_) => HabitsBloc(habitRepository: habitRepo)),
         BlocProvider(create: (_) => CreateBloc()),
         BlocProvider(

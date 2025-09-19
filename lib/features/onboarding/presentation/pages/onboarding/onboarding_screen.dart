@@ -1,8 +1,8 @@
 import 'package:consist/features/home_screen.dart';
-import 'package:consist/features/onboarding/presentation/blocs/bloc/boarding_bloc.dart';
-import 'package:consist/features/onboarding/presentation/pages/feature_introduction.dart';
-import 'package:consist/features/onboarding/presentation/pages/privacy_safety.dart';
-import 'package:consist/features/onboarding/presentation/pages/profile_setup.dart';
+import 'package:consist/features/onboarding/presentation/blocs/bloc/user_bloc.dart';
+import 'package:consist/features/onboarding/presentation/pages/onboarding/feature_introduction.dart';
+import 'package:consist/features/onboarding/presentation/pages/onboarding/privacy_safety.dart';
+import 'package:consist/features/onboarding/presentation/pages/onboarding/profile_setup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,7 +22,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void initState() {
     if (widget.pageIdx != null) {
-      context.read<BoardingBloc>().add(
+      context.read<UserBloc>().add(
         PageChangeEvent(pageIndex: widget.pageIdx!),
       );
     }
@@ -31,7 +31,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<BoardingBloc, BoardingState>(
+    return BlocConsumer<UserBloc, UserState>(
       listener: (context, state) {
         if (state is PageChangeState) {
           pageIndex = state.pageIndex;
@@ -46,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         }
         if (state is ProfileSetupSuccessState) {
           FocusScope.of(context).unfocus();
-          context.read<BoardingBloc>().add(
+          context.read<UserBloc>().add(
             PageChangeEvent(pageIndex: pageIndex + 1),
           );
         }
@@ -65,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   controller: pageController,
                   physics: const NeverScrollableScrollPhysics(),
                   // onPageChanged: (page) {
-                  //   context.read<BoardingBloc>().add(
+                  //   context.read<UserBloc>().add(
                   //     PageChangeEvent(pageIndex: page),
                   //   );
                   // },
@@ -113,7 +113,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           floatingActionButton: pageIndex == 2
               ? FloatingActionButton.extended(
                   onPressed: () =>
-                      context.read<BoardingBloc>().add(UserLoggedEvent()),
+                      context.read<UserBloc>().add(UserLoggedEvent()),
                   label: const Text('Get Started'),
                 )
               : pageIndex == 1
@@ -131,7 +131,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           SnackBar(content: Text('Please choose a avatar')),
                         );
                       } else {
-                        context.read<BoardingBloc>().add(
+                        context.read<UserBloc>().add(
                           ProfileSetupEvent(
                             avatar: avatar,
                             username: _nameController.text,
@@ -144,7 +144,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 )
               : FloatingActionButton(
                   onPressed: () {
-                    context.read<BoardingBloc>().add(
+                    context.read<UserBloc>().add(
                       PageChangeEvent(pageIndex: pageIndex + 1),
                     );
                   },

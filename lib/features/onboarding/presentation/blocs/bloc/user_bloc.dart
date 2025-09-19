@@ -1,17 +1,17 @@
-
 import 'dart:developer';
 
+import 'package:consist/features/onboarding/domain/entities/user_analytics_model.dart';
 import 'package:consist/features/onboarding/domain/repository/user_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-part 'boarding_event.dart';
-part 'boarding_state.dart';
+part 'user_event.dart';
+part 'user_state.dart';
 
-class BoardingBloc extends Bloc<BoardingEvent, BoardingState> {
+class UserBloc extends Bloc<UserEvent, UserState> {
   final UserRepository userRepository;
-  BoardingBloc({required this.userRepository}) : super(BoardingInitial()) {
+  UserBloc({required this.userRepository}) : super(UserInitial()) {
     on<PageChangeEvent>(
       (event, emit) => emit(PageChangeState(pageIndex: event.pageIndex)),
     );
@@ -33,32 +33,46 @@ class BoardingBloc extends Bloc<BoardingEvent, BoardingState> {
       }
     });
 
-    on<UserLoggedEvent>((event, emit) async{
+    on<UserLoggedEvent>((event, emit) async {
       try {
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isLogged',true).then((value) => emit(UserLoggedState()),); 
-
+        await prefs
+            .setBool('isLogged', true)
+            .then((value) => emit(UserLoggedState()));
       } catch (e) {
-         log(e.toString());
+        log(e.toString());
       }
     });
-    on<CheckUserLoginStatusEvent>((event, emit) async{
+    on<CheckUserLoginStatusEvent>((event, emit) async {
       try {
         final prefs = await SharedPreferences.getInstance();
-        final isLogged= prefs.getBool('isLogged')??false; 
+        final isLogged = prefs.getBool('isLogged') ?? false;
         await Future.delayed(Duration(seconds: 2));
-       if (isLogged) {
-         emit(UserLoggedState());
-       } else {
-          final userId= prefs.getString('userId'); 
-          if (userId!=null&&userId.isNotEmpty) {
+        if (isLogged) {
+          emit(UserLoggedState());
+        } else {
+          final userId = prefs.getString('userId');
+          if (userId != null && userId.isNotEmpty) {
             emit(UserProfileCreatedState());
           } else {
             emit(NewUserState());
           }
-       }
+        }
       } catch (e) {
         log(e.toString());
+      }
+    });
+    on<FetchUserProfileEvent>((event, emit) async {
+      emit(FetchUserProfileLoadingState());
+      try {
+        final user = await userRepository.getCurrentUser();
+        if (user != null) {
+          emit(FetchUserProfileSuccessState(user: user));
+        } else {
+          emit(FetchUserProfileErrorState(msg: 'No user found'));
+        }
+      } catch (e) {
+        emit(CheckUserLoginStatusErrorState(msg: 'Failed to fetch user'));
       }
     });
   }

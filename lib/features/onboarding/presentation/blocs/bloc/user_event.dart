@@ -1,15 +1,15 @@
-part of 'boarding_bloc.dart';
+part of 'user_bloc.dart';
 
-sealed class BoardingEvent extends Equatable {
-  const BoardingEvent();
+sealed class UserEvent extends Equatable {
+  const UserEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class OnboardingInitial extends BoardingEvent {}
+class OnboardingInitial extends UserEvent {}
 
-class PageChangeEvent extends BoardingEvent {
+class PageChangeEvent extends UserEvent {
   final int pageIndex;
 
   const PageChangeEvent({required this.pageIndex});
@@ -17,7 +17,7 @@ class PageChangeEvent extends BoardingEvent {
   List<Object> get props => [pageIndex];
 }
 
-class ChooseAvatarEvent extends BoardingEvent {
+class ChooseAvatarEvent extends UserEvent {
   final String avatar;
 
   const ChooseAvatarEvent({required this.avatar});
@@ -25,7 +25,7 @@ class ChooseAvatarEvent extends BoardingEvent {
   List<Object> get props => [avatar];
 }
 
-class ProfileSetupEvent extends BoardingEvent {
+class ProfileSetupEvent extends UserEvent {
   final String username;
   final String avatar;
 
@@ -34,9 +34,16 @@ class ProfileSetupEvent extends BoardingEvent {
   @override
   List<Object> get props => [username, avatar];
 }
-class UserLoggedEvent extends BoardingEvent {}
 
-class CheckUserLoginStatusEvent extends BoardingEvent {
+class UserLoggedEvent extends UserEvent {}
+
+class CheckUserLoginStatusEvent extends UserEvent {
   @override
   List<Object> get props => [];
 }
+
+class FetchUserProfileEvent extends UserEvent {
+  @override
+  List<Object> get props => [];
+}
+  
