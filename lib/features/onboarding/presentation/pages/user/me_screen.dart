@@ -1,8 +1,6 @@
 import 'package:consist/features/onboarding/domain/entities/user_analytics_model.dart';
-import 'package:consist/features/onboarding/presentation/blocs/bloc/user_bloc.dart';
+import 'package:consist/features/onboarding/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
-
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MeScreen extends StatefulWidget {
@@ -18,36 +16,37 @@ class _MeScreenState extends State<MeScreen> {
     context.read<UserBloc>().add(FetchUserProfileEvent());
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-        backgroundColor: const Color(0xFFF5F7FA),
-        body: BlocBuilder<UserBloc, UserState>(
-          builder: (context, state) {
-            return CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  expandedHeight: 220.0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: _buildProfileHeader(context, state),
-                  ),
-                  pinned: true,
-                  actions: [
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.settings_outlined, color: Colors.white),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
+      body: BlocBuilder<UserBloc, UserState>(
+        builder: (context, state) {
+          return CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: 220.0,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: _buildProfileHeader(context, state),
+                ),
+                pinned: true,
+                actions: [
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.settings_outlined,
+                      color: Colors.white,
                     ),
-                  ],
-                  backgroundColor: const Color(0xFF7C3AED),
-                ),
-                SliverToBoxAdapter(
-                  child: _buildContent(context, state),
-                ),
-              ],
-            );
-          },
-        ),
-    
+                  ),
+                ],
+                backgroundColor: const Color(0xFF7C3AED),
+              ),
+              SliverToBoxAdapter(child: _buildContent(context, state)),
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -93,11 +92,11 @@ class _MeScreenState extends State<MeScreen> {
             const SizedBox(height: 8),
             _buildStreakStatsSection(context, state.user),
             const SizedBox(height: 24),
-            _buildWeeklyProgressChart(context, state.user),
-            const SizedBox(height: 24),
-            _buildAchievementsSection(context, state.user),
-            const SizedBox(height: 24),
-            _buildActivityHistorySection(context, state.user),
+            // _buildWeeklyProgressChart(context, state.user),
+            // const SizedBox(height: 24),
+            // _buildAchievementsSection(context, state.user),
+            // const SizedBox(height: 24),
+            // _buildActivityHistorySection(context, state.user),
           ],
         ),
       );
@@ -154,13 +153,17 @@ class _MeScreenState extends State<MeScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.white, size: 32),
+                  const Icon(
+                    Icons.error_outline,
+                    color: Colors.white,
+                    size: 32,
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     'Failed to load profile',
-                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                          color: Colors.white,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleMedium!.copyWith(color: Colors.white),
                   ),
                 ],
               ),
@@ -213,26 +216,26 @@ class _MeScreenState extends State<MeScreen> {
                 Text(
                   userData.username,
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   '${userData.totalDaysActive} Active Days',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 14,
-                        color: Colors.white70,
-                      ),
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Joined ${userData.installedDate}',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 12,
-                        color: Colors.white70,
-                      ),
+                    fontSize: 12,
+                    color: Colors.white70,
+                  ),
                 ),
               ],
             ),
@@ -258,17 +261,20 @@ class _MeScreenState extends State<MeScreen> {
           Text(
             userData.stars.toString(),
             style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStreakStatsSection(BuildContext context, UserAnalytics userData) {
+  Widget _buildStreakStatsSection(
+    BuildContext context,
+    UserAnalytics userData,
+  ) {
     return Row(
       children: [
         Expanded(
@@ -280,18 +286,18 @@ class _MeScreenState extends State<MeScreen> {
                 Text(
                   userData.currentStreak.toString(),
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF10B981),
-                      ),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF10B981),
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Current Streak',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -308,18 +314,18 @@ class _MeScreenState extends State<MeScreen> {
                 Text(
                   userData.bestStreak.toString(),
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFFF59E0B),
-                      ),
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFFF59E0B),
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Best Streak',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -336,18 +342,18 @@ class _MeScreenState extends State<MeScreen> {
                 Text(
                   '${((userData.totalDaysActive / 365) * 100).toStringAsFixed(1)}%',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF6366F1),
-                      ),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF6366F1),
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   'Consistency',
                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -358,323 +364,311 @@ class _MeScreenState extends State<MeScreen> {
     );
   }
 
-  Widget _buildWeeklyProgressChart(BuildContext context, UserAnalytics userData) {
-    return _NeumorphicCard(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Weekly Progress',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 200,
-            child: BarChart(
-              BarChartData(
-                alignment: BarChartAlignment.spaceAround,
-                borderData: FlBorderData(show: false),
-                gridData: const FlGridData(show: false),
-                titlesData: FlTitlesData(
-                  bottomTitles: AxisTitles(
-                    sideTitles: SideTitles(
-                      showTitles: true,
-                      getTitlesWidget: (value, meta) {
-                        const days = [
-                          'Mon',
-                          'Tue',
-                          'Wed',
-                          'Thu',
-                          'Fri',
-                          'Sat',
-                          'Sun',
-                        ];
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            days[value.toInt()],
-                            style: Theme.of(
-                              context,
-                            ).textTheme.titleMedium!.copyWith(fontSize: 10),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  leftTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  topTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                  rightTitles: const AxisTitles(
-                    sideTitles: SideTitles(showTitles: false),
-                  ),
-                ),
-                barGroups: [
-                  BarChartGroupData(
-                    x: 0,
-                    barRods: [
-                      BarChartRodData(
-                        toY: 3,
-                        color: const Color(0xFF6366F1),
-                        width: 16,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                  ),
-                  BarChartGroupData(
-                    x: 1,
-                    barRods: [
-                      BarChartRodData(
-                        toY: 5,
-                        color: const Color(0xFF6366F1),
-                        width: 16,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                  ),
-                  BarChartGroupData(
-                    x: 2,
-                    barRods: [
-                      BarChartRodData(
-                        toY: 4,
-                        color: const Color(0xFF6366F1),
-                        width: 16,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                  ),
-                  BarChartGroupData(
-                    x: 3,
-                    barRods: [
-                      BarChartRodData(
-                        toY: 7,
-                        color: const Color(0xFF10B981),
-                        width: 16,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                  ),
-                  BarChartGroupData(
-                    x: 4,
-                    barRods: [
-                      BarChartRodData(
-                        toY: 2,
-                        color: const Color(0xFF6366F1),
-                        width: 16,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                  ),
-                  BarChartGroupData(
-                    x: 5,
-                    barRods: [
-                      BarChartRodData(
-                        toY: 4,
-                        color: const Color(0xFF6366F1),
-                        width: 16,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                  ),
-                  BarChartGroupData(
-                    x: 6,
-                    barRods: [
-                      BarChartRodData(
-                        toY: 6,
-                        color: const Color(0xFFF59E0B),
-                        width: 16,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildWeeklyProgressChart(
+  //   BuildContext context,
+  //   UserAnalytics userData,
+  // ) {
+  //   return _NeumorphicCard(
+  //     padding: const EdgeInsets.all(16),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           'Weekly Progress',
+  //           style: Theme.of(context).textTheme.titleMedium!.copyWith(
+  //             fontSize: 18,
+  //             fontWeight: FontWeight.w600,
+  //           ),
+  //         ),
+  //         const SizedBox(height: 16),
+  //         SizedBox(
+  //           height: 200,
+  //           child: BarChart(
+  //             BarChartData(
+  //               alignment: BarChartAlignment.spaceAround,
+  //               borderData: FlBorderData(show: false),
+  //               gridData: const FlGridData(show: false),
+  //               titlesData: FlTitlesData(
+  //                 bottomTitles: AxisTitles(
+  //                   sideTitles: SideTitles(
+  //                     showTitles: true,
+  //                     getTitlesWidget: (value, meta) {
+  //                       const days = [
+  //                         'Mon',
+  //                         'Tue',
+  //                         'Wed',
+  //                         'Thu',
+  //                         'Fri',
+  //                         'Sat',
+  //                         'Sun',
+  //                       ];
+  //                       return Padding(
+  //                         padding: const EdgeInsets.only(top: 8.0),
+  //                         child: Text(
+  //                           days[value.toInt()],
+  //                           style: Theme.of(
+  //                             context,
+  //                           ).textTheme.titleMedium!.copyWith(fontSize: 10),
+  //                         ),
+  //                       );
+  //                     },
+  //                   ),
+  //                 ),
+  //                 leftTitles: const AxisTitles(
+  //                   sideTitles: SideTitles(showTitles: false),
+  //                 ),
+  //                 topTitles: const AxisTitles(
+  //                   sideTitles: SideTitles(showTitles: false),
+  //                 ),
+  //                 rightTitles: const AxisTitles(
+  //                   sideTitles: SideTitles(showTitles: false),
+  //                 ),
+  //               ),
+  //               barGroups: [
+  //                 BarChartGroupData(
+  //                   x: 0,
+  //                   barRods: [
+  //                     BarChartRodData(
+  //                       toY: 3,
+  //                       color: const Color(0xFF6366F1),
+  //                       width: 16,
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 BarChartGroupData(
+  //                   x: 1,
+  //                   barRods: [
+  //                     BarChartRodData(
+  //                       toY: 5,
+  //                       color: const Color(0xFF6366F1),
+  //                       width: 16,
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 BarChartGroupData(
+  //                   x: 2,
+  //                   barRods: [
+  //                     BarChartRodData(
+  //                       toY: 4,
+  //                       color: const Color(0xFF6366F1),
+  //                       width: 16,
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 BarChartGroupData(
+  //                   x: 3,
+  //                   barRods: [
+  //                     BarChartRodData(
+  //                       toY: 7,
+  //                       color: const Color(0xFF10B981),
+  //                       width: 16,
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 BarChartGroupData(
+  //                   x: 4,
+  //                   barRods: [
+  //                     BarChartRodData(
+  //                       toY: 2,
+  //                       color: const Color(0xFF6366F1),
+  //                       width: 16,
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 BarChartGroupData(
+  //                   x: 5,
+  //                   barRods: [
+  //                     BarChartRodData(
+  //                       toY: 4,
+  //                       color: const Color(0xFF6366F1),
+  //                       width: 16,
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 BarChartGroupData(
+  //                   x: 6,
+  //                   barRods: [
+  //                     BarChartRodData(
+  //                       toY: 6,
+  //                       color: const Color(0xFFF59E0B),
+  //                       width: 16,
+  //                       borderRadius: BorderRadius.circular(4),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildAchievementsSection(BuildContext context, UserAnalytics userData) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Achievements',
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              final colors = [
-                const Color(0xFF7C3AED),
-                const Color(0xFF10B981),
-                const Color(0xFFF59E0B),
-                const Color(0xFF6366F1),
-                const Color(0xFFEC4899),
-              ];
+  // Widget _buildAchievementsSection(
+  //   BuildContext context,
+  //   UserAnalytics userData,
+  // ) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         'Achievements',
+  //         style: Theme.of(context).textTheme.titleMedium!.copyWith(
+  //           fontSize: 18,
+  //           fontWeight: FontWeight.w600,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 12),
+  //       GestureDetector(
+  //         onTap: () {
+  //           Navigator.push(
+  //             context,
+  //             MaterialPageRoute(
+  //               builder: (context) =>  AchievementsScreen(),
+  //             ),
+  //           );
+  //         },
+  //         child: SizedBox(
+  //           height: 100,
+  //           child: _NeumorphicCard(
+  //             child: Column(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //               children: [
+  //                 Icon(
+  //                   Icons.fitness_center,
+  //                   size: 28,
+  //                   color: const Color(0xFFF59E0B),
+  //                 ),
+  //                 const SizedBox(height: 6),
+  //                 Text(
+  //                   'Achievements',
+  //                   style: Theme.of(context).textTheme.titleMedium!.copyWith(
+  //                     fontSize: 10,
+  //                     fontWeight: FontWeight.w500,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-              final icons = [
-                Icons.fitness_center,
-                Icons.self_improvement,
-                Icons.nights_stay,
-                Icons.local_dining,
-                Icons.book,
-              ];
+  // Widget _buildActivityHistorySection(
+  //   BuildContext context,
+  //   UserAnalytics userData,
+  // ) {
+  //   return _NeumorphicCard(
+  //     padding: const EdgeInsets.all(16),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Text(
+  //           'Recent Activity',
+  //           style: Theme.of(context).textTheme.titleMedium!.copyWith(
+  //             fontSize: 18,
+  //             fontWeight: FontWeight.w600,
+  //           ),
+  //         ),
+  //         const SizedBox(height: 16),
+  //         _buildActivityItem(
+  //           'Morning Run',
+  //           'Completed',
+  //           'Today, 7:30 AM',
+  //           Icons.directions_run,
+  //           context,
+  //         ),
+  //         _buildActivityItem(
+  //           'Meditation',
+  //           'Completed',
+  //           'Today, 8:15 AM',
+  //           Icons.self_improvement,
+  //           context,
+  //         ),
+  //         _buildActivityItem(
+  //           'Read Book',
+  //           'Completed',
+  //           'Yesterday, 9:20 PM',
+  //           Icons.menu_book,
+  //           context,
+  //         ),
+  //         _buildActivityItem(
+  //           'Water Intake',
+  //           'Missed',
+  //           'Oct 26',
+  //           Icons.water_drop,
+  //           context,
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-              final titles = [
-                'Fitness Guru',
-                'Mindfulness Master',
-                'Sleep Expert',
-                'Nutrition Pro',
-                'Learning Champion',
-              ];
-
-              return Padding(
-                padding: const EdgeInsets.only(right: 12.0),
-                child: _NeumorphicCard(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(icons[index], size: 28, color: colors[index]),
-                      const SizedBox(height: 6),
-                      Text(
-                        titles[index],
-                        style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActivityHistorySection(BuildContext context, UserAnalytics userData) {
-    return _NeumorphicCard(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Recent Activity',
-            style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-        ),
-          const SizedBox(height: 16),
-          _buildActivityItem(
-            'Morning Run',
-            'Completed',
-            'Today, 7:30 AM',
-            Icons.directions_run,
-            context,
-          ),
-          _buildActivityItem(
-            'Meditation',
-            'Completed',
-            'Today, 8:15 AM',
-            Icons.self_improvement,
-            context,
-          ),
-          _buildActivityItem(
-            'Read Book',
-            'Completed',
-            'Yesterday, 9:20 PM',
-            Icons.menu_book,
-            context,
-          ),
-          _buildActivityItem(
-            'Water Intake',
-            'Missed',
-            'Oct 26',
-            Icons.water_drop,
-            context,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActivityItem(
-    String title,
-    String status,
-    String time,
-    IconData icon,
-    BuildContext context,
-  ) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: const Color(0xFF7C3AED).withOpacity(0.1),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: const Color(0xFF7C3AED), size: 20),
-      ),
-      title: Text(
-        title,
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),
-      ),
-      subtitle: Text(
-        time,
-        style: Theme.of(
-          context,
-        ).textTheme.titleMedium!.copyWith(fontSize: 12, color: Colors.grey),
-      ),
-      trailing: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: status == 'Completed'
-              ? const Color(0xFF10B981).withOpacity(0.2)
-              : Colors.grey.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          status,
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                fontSize: 12,
-                color: status == 'Completed'
-                    ? const Color(0xFF10B981)
-                    : Colors.grey,
-              ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildActivityItem(
+  //   String title,
+  //   String status,
+  //   String time,
+  //   IconData icon,
+  //   BuildContext context,
+  // ) {
+  //   return ListTile(
+  //     contentPadding: EdgeInsets.zero,
+  //     leading: Container(
+  //       width: 40,
+  //       height: 40,
+  //       decoration: BoxDecoration(
+  //         color: const Color(0xFF7C3AED).withOpacity(0.1),
+  //         shape: BoxShape.circle,
+  //       ),
+  //       child: Icon(icon, color: const Color(0xFF7C3AED), size: 20),
+  //     ),
+  //     title: Text(
+  //       title,
+  //       style: Theme.of(
+  //         context,
+  //       ).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w500),
+  //     ),
+  //     subtitle: Text(
+  //       time,
+  //       style: Theme.of(
+  //         context,
+  //       ).textTheme.titleMedium!.copyWith(fontSize: 12, color: Colors.grey),
+  //     ),
+  //     trailing: Container(
+  //       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+  //       decoration: BoxDecoration(
+  //         color: status == 'Completed'
+  //             ? const Color(0xFF10B981).withOpacity(0.2)
+  //             : Colors.grey.withOpacity(0.2),
+  //         borderRadius: BorderRadius.circular(12),
+  //       ),
+  //       child: Text(
+  //         status,
+  //         style: Theme.of(context).textTheme.titleMedium!.copyWith(
+  //           fontSize: 12,
+  //           color: status == 'Completed'
+  //               ? const Color(0xFF10B981)
+  //               : Colors.grey,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }
 
 class _NeumorphicCard extends StatelessWidget {
   final Widget child;
-  final EdgeInsetsGeometry? padding;
 
-  const _NeumorphicCard({required this.child, this.padding});
+  const _NeumorphicCard({required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -695,11 +689,12 @@ class _NeumorphicCard extends StatelessWidget {
           ),
         ],
       ),
-      padding: padding ?? const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: child,
     );
   }
 }
+
 // class MeScreen extends StatelessWidget {
 //   const MeScreen({super.key});
 

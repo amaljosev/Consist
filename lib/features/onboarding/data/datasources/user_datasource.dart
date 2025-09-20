@@ -188,28 +188,32 @@ class UserLocalDataSource {
     }
   }
 
-  Future<void> checkAndUpdateDailyStats() async {
-    try {
-      final user = await getCurrentUser();
-      if (user == null) return;
+  Future<bool> checkAndUpdateDailyStats() async {
+  try {
+    final user = await getCurrentUser();
+    if (user == null) return false;
 
-      final now = DateTime.now();
-      final lastLogin = DateTime.parse(user.lastLogin);
+    final now = DateTime.now();
+    final lastLogin = DateTime.parse(user.lastLogin);
 
-      // Check if we already processed today's update
-      if (_isSameDay(lastLogin, now)) {
-        return; // Already updated today, no need to process again
-      }
-
-      // Always update last login timestamp
-      await updateLastLogin();
-
-      // Handle streak and activity logic
-      await _handleStreakAndActivity(user, now);
-    } catch (e, st) {
-      log('checkAndUpdateDailyStats error: $e', stackTrace: st);
+    // Check if we already processed today's update
+    if (_isSameDay(lastLogin, now)) {
+      return true; // Already updated today, nothing else to do
     }
+
+    // Always update last login timestamp
+    await updateLastLogin();
+
+    // Handle streak and activity logic
+    await _handleStreakAndActivity(user, now);
+
+    return true; // ✅ Success
+  } catch (e, st) {
+    log('checkAndUpdateDailyStats error: $e', stackTrace: st);
+    return false; // ❌ Failed
   }
+}
+
 
   Future<void> _handleStreakAndActivity(
     UserAnalytics user,

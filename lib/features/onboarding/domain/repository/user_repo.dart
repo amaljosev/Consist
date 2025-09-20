@@ -15,7 +15,7 @@ abstract class UserRepository {
   Future<int> updateStreak();
   Future<int> resetCurrentStreak();
   Future<int> incrementDaysActive();
-  Future<void> checkAndUpdateDailyStats();
+  Future<bool> checkAndUpdateDailyStats();
   
   // Achievements
   Future<int> addAchievement(int achievementId);

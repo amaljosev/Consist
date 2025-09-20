@@ -1,5 +1,5 @@
 import 'package:consist/core/constants/onboarding_items.dart';
-import 'package:consist/features/onboarding/presentation/blocs/bloc/user_bloc.dart';
+import 'package:consist/features/onboarding/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -87,12 +87,12 @@ class _AvatarSelectionGrid extends StatelessWidget {
       spacing: 10,
       alignment: WrapAlignment.center,
       children: List.generate(OnboardingItems.avatars.length, (index) {
-        final avatarKey = 'avatar$index';
+        
         return _AvatarOption(
           imageUrl: OnboardingItems.avatars[index],
-          isSelected: selectedAvatar == avatarKey,
+          isSelected: selectedAvatar == OnboardingItems.avatars[index],
           onTap: () => context.read<UserBloc>().add(
-            ChooseAvatarEvent(avatar: avatarKey),
+            ChooseAvatarEvent(avatar: OnboardingItems.avatars[index]),
           ),
         );
       }),

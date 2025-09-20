@@ -99,11 +99,12 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> checkAndUpdateDailyStats() async {
+  Future<bool> checkAndUpdateDailyStats() async {
     try {
       return await localDataSource.checkAndUpdateDailyStats();
     } catch (e, s) {
       log("Error in checkAndUpdateDailyStats", error: e, stackTrace: s);
+       return false;
     }
   }
 

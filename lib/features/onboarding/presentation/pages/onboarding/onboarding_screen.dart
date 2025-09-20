@@ -1,5 +1,5 @@
 import 'package:consist/features/home_screen.dart';
-import 'package:consist/features/onboarding/presentation/blocs/bloc/user_bloc.dart';
+import 'package:consist/features/onboarding/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:consist/features/onboarding/presentation/pages/onboarding/feature_introduction.dart';
 import 'package:consist/features/onboarding/presentation/pages/onboarding/privacy_safety.dart';
 import 'package:consist/features/onboarding/presentation/pages/onboarding/profile_setup.dart';

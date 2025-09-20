@@ -1,6 +1,6 @@
 import 'package:consist/core/app_icons.dart';
 import 'package:consist/features/home_screen.dart';
-import 'package:consist/features/onboarding/presentation/blocs/bloc/user_bloc.dart';
+import 'package:consist/features/onboarding/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:consist/features/onboarding/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

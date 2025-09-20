@@ -1,11 +1,9 @@
 import 'dart:developer';
-
 import 'package:consist/features/onboarding/domain/entities/user_analytics_model.dart';
 import 'package:consist/features/onboarding/domain/repository/user_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 part 'user_event.dart';
 part 'user_state.dart';
 
@@ -44,12 +42,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     });
     on<CheckUserLoginStatusEvent>((event, emit) async {
+      emit(CheckUserLoginStatusLoadingState());
       try {
         final prefs = await SharedPreferences.getInstance();
         final isLogged = prefs.getBool('isLogged') ?? false;
         await Future.delayed(Duration(seconds: 2));
         if (isLogged) {
-          emit(UserLoggedState());
+          final result = await userRepository.checkAndUpdateDailyStats();
+          if (result) {
+            emit(UserLoggedState());
+          } else {
+            emit(CheckUserLoginStatusErrorState(
+                msg: 'Please try again'));
+          }
         } else {
           final userId = prefs.getString('userId');
           if (userId != null && userId.isNotEmpty) {
@@ -60,6 +65,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         }
       } catch (e) {
         log(e.toString());
+        emit(CheckUserLoginStatusErrorState(msg: 'Please try again'));  
       }
     });
     on<FetchUserProfileEvent>((event, emit) async {
